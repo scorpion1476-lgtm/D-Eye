@@ -118,6 +118,15 @@ def cmd_doctor_where(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_init_claude(args, cfg: Config) -> int:
+    """Register D-Eye with Claude Desktop (and optionally Claude Code) locally."""
+    from deye.init_claude import init_claude
+    report = init_claude(python_exe=args.python, dry_run=args.dry_run,
+                         run_claude_code=args.run_claude_code)
+    _print(report)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="deye", description="D-Eye capability + evidence layer")
     p.add_argument("--version", action="version", version=f"deye {__version__}")
@@ -129,6 +138,11 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("connectors", help="list connectors")
     d = sub.add_parser("doctor", help="health-check connectors and surfaces")
     d.add_argument("--surfaces", action="store_true", help="report Claude surface activation")
+
+    ic = sub.add_parser("init-claude", help="register D-Eye with Claude Desktop / Claude Code")
+    ic.add_argument("--python", default=None, help="python interpreter to launch the server with")
+    ic.add_argument("--dry-run", action="store_true", help="show what would be written, change nothing")
+    ic.add_argument("--run-claude-code", action="store_true", help="also run `claude mcp add` if the CLI is present")
 
     s = sub.add_parser("search", help="web search"); s.add_argument("query")
     f = sub.add_parser("fetch", help="fetch + extract a URL"); f.add_argument("url")
@@ -150,6 +164,7 @@ _DISPATCH = {
     "setup": cmd_setup, "status": cmd_status, "capabilities": cmd_capabilities,
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
     "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
+    "init-claude": cmd_init_claude,
 }
 
 
