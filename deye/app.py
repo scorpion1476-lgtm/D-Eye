@@ -1,0 +1,78 @@
+"""Assembly + the core research workflow (the Phase-3 vertical slice).
+
+    request -> policy -> search -> fetch -> extract -> provenance -> cited export
+"""
+
+from __future__ import annotations
+
+from deye.connectors import rss, web_fetch, web_search
+from deye.core.config import Config
+from deye.core.evidence import EvidenceStore
+from deye.core.policy import ConsentPolicy
+from deye.core.provenance import Envelope, ResearchPacket
+from deye.core.registry import Registry
+from deye.core.router import Router
+
+
+def build_registry(config: Config | None = None) -> Registry:
+    config = config or Config()
+    reg = Registry()
+    reg.register(web_fetch.manifest(config))
+    for m in web_search.manifests(config):
+        reg.register(m)
+    reg.register(rss.manifest(config))
+    return reg
+
+
+def build_router(config: Config | None = None, *, allow_write: bool = False) -> Router:
+    config = config or Config()
+    consent = ConsentPolicy(allow_write=allow_write)
+    return Router(registry=build_registry(config), consent=consent)
+
+
+def search(router: Router, query: str) -> Envelope:
+    return router.route("search", {"query": query})
+
+
+def fetch(router: Router, url: str) -> Envelope:
+    return router.route("fetch", {"url": url})
+
+
+def research(router: Router, query: str, *, max_sources: int = 3,
+             config: Config | None = None, persist: bool = True) -> ResearchPacket:
+    """End-to-end: search, then fetch+extract the top results, into one packet.
+
+    Deduplicates result URLs and, when *persist* is set, records the packet into
+    the persistent evidence store so `query_evidence` can find it later.
+    """
+    config = config or Config()
+    packet = ResearchPacket(query=query)
+    results_env = search(router, query)
+    packet.envelopes.append(results_env)
+
+    urls: list[str] = []
+    for artifact in results_env.artifacts:
+        if artifact.get("type") == "search_results":
+            for r in artifact["results"]:
+                u = r.get("url")
+                if u and u not in urls:          # dedupe
+                    urls.append(u)
+    for url in urls[:max_sources]:
+        try:
+            packet.envelopes.append(fetch(router, url))
+        except Exception as exc:  # noqa: BLE001 -- record and continue
+            results_env.warnings.append(f"skipped {url}: {exc}")
+
+    if persist:
+        try:
+            EvidenceStore(config.evidence_db).record_packet(packet)
+        except Exception as exc:  # noqa: BLE001 -- persistence is best-effort
+            results_env.warnings.append(f"evidence persistence skipped: {exc}")
+    return packet
+
+
+def query_evidence(query: str, *, config: Config | None = None, limit: int = 20) -> dict:
+    """Query the persistent evidence store built up by prior research runs."""
+    config = config or Config()
+    store = EvidenceStore(config.evidence_db)
+    return {"query": query, "results": store.query(query, limit=limit), "stats": store.stats()}
