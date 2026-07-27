@@ -1,0 +1,17 @@
+services:
+  deye-remote:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: deye:0.2.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"    # bind loopback; put TLS/reverse-proxy in front
+    environment:
+      # REQUIRED. Provide via your orchestrator's secret store, never inline.
+      - DEYE_HTTP_TOKEN=${DEYE_HTTP_TOKEN:?set DEYE_HTTP_TOKEN}
+      # - EXA_API_KEY=${EXA_API_KEY}   # optional; adapter is unimplemented
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

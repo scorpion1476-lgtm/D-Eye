@@ -1,0 +1,18 @@
+{
+  "name": "d-eye",
+  "version": "0.2.0",
+  "description": "D-Eye: FOSS-first capability + evidence layer for agents. Policy-gated web search, fetch, extract and cited research packets over MCP. Read-only by default.",
+  "author": {"name": "D-Eye contributors"},
+  "license": "MIT",
+  "keywords": ["mcp", "search", "research", "evidence", "provenance", "foss"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "userConfig": {
+    "exa_api_key": {
+      "title": "Exa API key (optional)",
+      "description": "Optional hosted search adapter. Leave blank to use the keyless FOSS default.",
+      "type": "string",
+      "sensitive": true
+    }
+  }
+}

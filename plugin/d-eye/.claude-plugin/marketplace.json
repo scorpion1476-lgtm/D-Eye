@@ -1,0 +1,5 @@
+{
+  "name": "d-eye",
+  "owner": {"name": "D-Eye contributors"},
+  "plugins": [{"name": "d-eye", "source": "./"}]
+}
