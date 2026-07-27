@@ -14,10 +14,10 @@ $ python -m pytest -q
     from starlette.testclient import TestClient
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-45 passed, 1 warning in 0.86s
+51 passed, 1 warning in 0.69s
 ```
 
-Tests discovered: 45. Result: all passed (see above).
+Tests discovered: 51 (with the optional mcp/starlette/uvicorn extras installed). Result: all passed. Without those extras the 4 remote-auth tests skip cleanly (47 passed, 1 skipped) -- they are the only tests needing optional dependencies.
 
 ## Live checks actually performed during remediation
 - `py_compile` across all modules: OK.
@@ -31,4 +31,4 @@ Tests discovered: 45. Result: all passed (see above).
 ## NOT verifiable in this environment (stated honestly)
 - Docker image BUILD/RUN: no Docker daemon in this sandbox. Dockerfile/compose provided and lint-reviewed, not built here.
 - Live end-to-end handshake from the actual Claude web client to the remote service (requires a hosted deployment).
-- macOS/Windows path handling: code uses pathlib + os-agnostic APIs; only Linux executed here.
+- macOS/Windows path handling: code uses pathlib + os-agnostic APIs; only Linux executed here. (v0.2.0-validated: init-claude path building exercised on macOS via Desktop Commander during install.)

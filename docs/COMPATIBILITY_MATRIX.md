@@ -32,8 +32,11 @@ These are two different mechanisms. The strongest legitimate design is:
 - **one** Desktop MCP entry -> covers Desktop + Code-in-Desktop + Cowork.
 
 That is three small one-time actions, after which no per-project repetition is
-needed on the surfaces that support user/account scope. `deye doctor --surfaces`
-reports exactly where you are active.
+needed on the surfaces that support user/account scope. `deye init-claude`
+performs the **two local** actions automatically (the Desktop MCP entry and the
+Claude Code user-scope add); only the remote web-connector registration remains
+a manual step in the Claude.ai interface, because Anthropic exposes no API for
+it. `deye doctor --surfaces` reports exactly where you are active.
 
 
 ## Local stdio vs remote HTTP (important correction)

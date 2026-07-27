@@ -7,9 +7,9 @@
 web, fetch and extract pages, and produce **cited, provenance-tracked research
 packets** - with security decisions made deterministically *outside* the model.
 
-> Status: **working vertical slice + stable contracts.** This is an honest v0.1,
-> not a finished platform. See "What's built vs. roadmap" below and
-> `docs/THREAT_MODEL.md`.
+> Status: **working vertical slice + stable contracts (v0.2.0, validated).**
+> An honest, audited slice - not yet a finished platform. See "What's built vs.
+> roadmap" below and `docs/THREAT_MODEL.md`.
 
 ## Why it exists
 It consolidates the strongest idea from the studied references (a *capability
@@ -29,8 +29,13 @@ and a real SSRF guard the reference lacked.
 ## Quick start
 ```bash
 cd deye && pip install -e . && deye setup && deye doctor
+deye init-claude --run-claude-code   # registers D-Eye with Claude Desktop + Claude Code, then restart Claude Desktop
 deye research "continuous pricing in airline revenue management" -o packet.md
 ```
+`deye init-claude` merges a `deye` MCP entry into the Claude Desktop config for
+your OS (backing up any existing file, never clobbering other servers) and runs
+the Claude Code registration; add `--dry-run` to preview. Or run
+`./scripts/install.sh` to do install + setup + registration in one step.
 See `docs/INSTALL.md` and `docs/QUICKSTART_NONTECHNICAL.md`.
 
 ## The MCP facade (small and stable)
@@ -44,7 +49,7 @@ deye/            core contracts, connectors, CLI, MCP facade
   core/          policy(SSRF), provenance, redact, registry, router, config
   connectors/    web_fetch, web_search(+optional Exa), rss
 plugin/d-eye/    Claude plugin (local server, no secrets, no telemetry)
-tests/           SSRF, redaction, router, MCP, CLI, secret-scan  (36 tests)
+tests/           SSRF, redaction, router, MCP, CLI, secret-scan  (51 tests)
 docs/            compatibility matrix, threat model, licence inventory, guides
 docker/          remote-connector deployment
 ```
