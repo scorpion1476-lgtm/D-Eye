@@ -1,0 +1,29 @@
+D-Eye
+=====
+
+D-Eye is an independent, clean-room implementation. It was informed by the
+architecture and security patterns of the following projects, which are NOT
+bundled or copied verbatim. No source file, branding, credential, or private
+API from these projects is included in D-Eye.
+
+Design inspiration and patterns studied (not vendored):
+
+  * Agent-Reach  -- MIT License, Copyright (c) 2025 Agent Eyes / "Neo Reid"
+                    https://github.com/Panniantong/Agent-Reach
+                    (capability-router idea; URL host-allowlist pattern re-implemented
+                     and hardened into deye/core/policy.py)
+
+  * mcpmarket-plugin (MCPmarket) -- MIT License
+                    https://github.com/knoxgraeme/mcpmarket-plugin
+                    (Claude plugin manifest / hook shape studied; the plugin here
+                     ships NO remote token and NO remote skill-sync path.)
+
+  * OpenCLI -- Apache-2.0 (referenced as an optional, user-controlled browser
+               edge connector; not implemented in this vertical slice.)
+
+Optional hosted adapters (Exa, Firebase/Genkit) are referenced as OPTIONAL
+integrations only and are never required by the D-Eye core.
+
+SECURITY NOTE: the supplied mcpmarket plugin archive contained a live-looking
+bearer token in its .mcp.json. That value was treated as compromised, is NOT
+reproduced anywhere in D-Eye, and should be revoked/rotated by its owner.
