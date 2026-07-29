@@ -202,19 +202,36 @@ class Queue:
             )
             return cur.lastrowid
 
+    # Four pre-built parameterised queries — one per topic+tenant combination.
+    # Bandit B608 flagged the earlier dynamic-string version even though every
+    # dynamic value goes through a `?` placeholder; this variant removes any
+    # string concatenation so the static analyzer stays clean and the intent
+    # (no user data ever meets the SQL literal) is obvious to a reviewer.
+    _CLAIM_SQL = {
+        (False, False): (
+            "SELECT id, topic, payload, attempts, tenant FROM jobs "
+            "WHERE status = 'pending' ORDER BY id LIMIT 1"),
+        (True, False): (
+            "SELECT id, topic, payload, attempts, tenant FROM jobs "
+            "WHERE status = 'pending' AND topic = ? ORDER BY id LIMIT 1"),
+        (False, True): (
+            "SELECT id, topic, payload, attempts, tenant FROM jobs "
+            "WHERE status = 'pending' AND tenant = ? ORDER BY id LIMIT 1"),
+        (True, True): (
+            "SELECT id, topic, payload, attempts, tenant FROM jobs "
+            "WHERE status = 'pending' AND topic = ? AND tenant = ? "
+            "ORDER BY id LIMIT 1"),
+    }
+
     def claim(self, topic: str | None = None, *,
               tenant: str | None = None) -> dict | None:
         """Atomically pick the oldest pending job and mark it in_flight."""
-        where = ["status = 'pending'"]
         params: list = []
         if topic:
-            where.append("topic = ?")
             params.append(topic)
         if tenant:
-            where.append("tenant = ?")
             params.append(tenant)
-        sql = ("SELECT id, topic, payload, attempts, tenant FROM jobs "
-               "WHERE " + " AND ".join(where) + " ORDER BY id LIMIT 1")
+        sql = self._CLAIM_SQL[(bool(topic), bool(tenant))]
         with closing(self._conn()) as conn:
             conn.execute("BEGIN IMMEDIATE")
             row = conn.execute(sql, params).fetchone()
