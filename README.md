@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/branding/D-Eye_Icon1.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/branding/D-Eye_Icon21.svg">
+  <img alt="D-Eye — a FOSS-first capability and evidence layer for AI agents" src="assets/branding/D-Eye_Icon21.svg" width="640">
+</picture>
+
 # D-Eye
 
 > v0.2.0 (validated) - second-pass audit remediation applied. See `CHANGELOG.md`.

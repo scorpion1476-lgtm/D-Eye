@@ -1,0 +1,195 @@
+{
+  "schema": "d-eye-branding-manifest/1",
+  "generated_at": "2026-07-30",
+  "source_of_truth": {
+    "note": "The authoritative originals live at /Users/bharatvishwakarma/Desktop/D-Eye/D-Eye_Icon*.svg on the user's workstation. The copies in this directory are byte-identical (see SHA-256).",
+    "workspace_root": "/Users/bharatvishwakarma/Desktop/D-Eye"
+  },
+  "assets": [
+    {
+      "id": "d-eye.dark.raster",
+      "filename": "D-Eye_Icon.svg",
+      "path_in_repo": "assets/branding/D-Eye_Icon.svg",
+      "mime": "image/svg+xml",
+      "sha256": "0e3e738d937084575fdd0b81c11a933fdb347d539e0ada2faf4907e850515b98",
+      "size_bytes": 203850,
+      "theme": "dark",
+      "intended_background": "dark",
+      "svg_width": "3625",
+      "svg_height": "765",
+      "viewBox": null,
+      "element_count": 24,
+      "embedded_raster": {
+        "present": true,
+        "mime": "image/png",
+        "count": 1,
+        "estimated_base64_bytes": 196232,
+        "note": "This SVG is a thin wrapper around a real PNG. The palette values (16x white) come from the SVG wrapper; the visible design comes from the embedded PNG."
+      },
+      "used_in": [
+        "repository/deye/README.md (dark-mode <source>)"
+      ],
+      "notes": [
+        "Preferred for dark UI surfaces where raster is acceptable.",
+        "Do not silently recolor or rasterize; use as-is."
+      ]
+    },
+    {
+      "id": "d-eye.dark.vector",
+      "filename": "D-Eye_Icon1.svg",
+      "path_in_repo": "assets/branding/D-Eye_Icon1.svg",
+      "mime": "image/svg+xml",
+      "sha256": "18966298451cea5b8f7c8acb7e0e06b40843e5b3429d90eddedcbfae73d4ef20",
+      "size_bytes": 7374,
+      "theme": "dark",
+      "intended_background": "dark",
+      "svg_width": "3437",
+      "svg_height": "578",
+      "viewBox": null,
+      "element_count": 22,
+      "embedded_raster": {
+        "present": false,
+        "mime": null,
+        "count": 0,
+        "estimated_base64_bytes": 0,
+        "note": "Pure vector; scales cleanly at any resolution."
+      },
+      "used_in": [
+        "repository/deye/README.md (dark-mode <source srcset>)",
+        "repository/deye/plugin/d-eye/plugin.json (logo_dark_ref)"
+      ],
+      "notes": [
+        "Preferred for README dark-mode display via <picture>.",
+        "Smallest file; safest for embedding."
+      ]
+    },
+    {
+      "id": "d-eye.light.raster",
+      "filename": "D-Eye_Icon2.svg",
+      "path_in_repo": "assets/branding/D-Eye_Icon2.svg",
+      "mime": "image/svg+xml",
+      "sha256": "58d4c21c23da0e456090e450350379a18481608c8b9656e16c4a2e3db6986b47",
+      "size_bytes": 220222,
+      "theme": "light",
+      "intended_background": "light",
+      "svg_width": "3625",
+      "svg_height": "766",
+      "viewBox": null,
+      "element_count": 24,
+      "embedded_raster": {
+        "present": true,
+        "mime": "image/png",
+        "count": 1,
+        "estimated_base64_bytes": 212652,
+        "note": "SVG wrapper around a real PNG (light-theme rendering)."
+      },
+      "used_in": [
+        "repository/deye/README.md (light-mode <source>)",
+        "assets/branding/derivatives/D-Eye_light.png (base64-decoded PNG payload)"
+      ],
+      "notes": [
+        "Preferred for light UI surfaces where raster is acceptable.",
+        "Do not silently recolor or rasterize; use as-is."
+      ]
+    },
+    {
+      "id": "d-eye.light.vector",
+      "filename": "D-Eye_Icon21.svg",
+      "path_in_repo": "assets/branding/D-Eye_Icon21.svg",
+      "mime": "image/svg+xml",
+      "sha256": "10c58e2335012bd97eb2b6f6600484754748a829603b990f1eb76e0ea555c744",
+      "size_bytes": 7327,
+      "theme": "light",
+      "intended_background": "light",
+      "svg_width": "3437",
+      "svg_height": "582",
+      "viewBox": null,
+      "element_count": 22,
+      "embedded_raster": {
+        "present": false,
+        "mime": null,
+        "count": 0,
+        "estimated_base64_bytes": 0,
+        "note": "Pure vector; scales cleanly at any resolution."
+      },
+      "used_in": [
+        "repository/deye/README.md (default <img> + light-mode <source srcset>)",
+        "repository/deye/plugin/d-eye/plugin.json (logo_light_ref)",
+        "repository/deye/plugin/d-eye/marketplace.json (logo_reference)"
+      ],
+      "notes": [
+        "Preferred for README default + light-mode display via <picture>.",
+        "Smallest file; safest for embedding.",
+        "Preferred canonical logo referenced from CLI --version output docs."
+      ]
+    }
+  ],
+  "derivatives": [
+    {
+      "id": "d-eye.dark.png",
+      "filename": "D-Eye_dark.png",
+      "path_in_repo": "assets/branding/derivatives/D-Eye_dark.png",
+      "mime": "image/png",
+      "sha256": "912c69a4622625b395af1bb79ca4aecaace3cf9a5c784f21f827899f950fb5a2",
+      "size_bytes": 147174,
+      "width_px": 1388,
+      "height_px": 292,
+      "colour_depth": "8-bit RGBA",
+      "source_asset_id": "d-eye.dark.raster",
+      "source_sha256": "0e3e738d937084575fdd0b81c11a933fdb347d539e0ada2faf4907e850515b98",
+      "transformation": "base64-decode of the data:image/png;base64,... payload embedded inside D-Eye_Icon.svg — no re-encode, no re-render, bit-for-bit identical to the original raster bytes.",
+      "used_in": [
+        "reserved for local packaging + documentation illustrations only"
+      ],
+      "notes": [
+        "Not the GitHub social-preview upload; that is the light PNG.",
+        "Do NOT use for the GitHub social preview — GitHub renders the preview on a light card background."
+      ]
+    },
+    {
+      "id": "d-eye.light.png",
+      "filename": "D-Eye_light.png",
+      "path_in_repo": "assets/branding/derivatives/D-Eye_light.png",
+      "mime": "image/png",
+      "sha256": "c08012cd8f297363ab4c9fe4077aac461220b3efb6d3627bf92ab587a1631eae",
+      "size_bytes": 159489,
+      "width_px": 1388,
+      "height_px": 292,
+      "colour_depth": "8-bit RGBA",
+      "source_asset_id": "d-eye.light.raster",
+      "source_sha256": "58d4c21c23da0e456090e450350379a18481608c8b9656e16c4a2e3db6986b47",
+      "transformation": "base64-decode of the data:image/png;base64,... payload embedded inside D-Eye_Icon2.svg — no re-encode, no re-render, bit-for-bit identical to the original raster bytes.",
+      "used_in": [
+        "candidate for GitHub social preview upload (159 KB < 1 MB limit)",
+        "repository/deye/plugin/d-eye/marketplace.json (raster_reference)"
+      ],
+      "notes": [
+        "GitHub social-preview uploads must be PNG/JPG/GIF under 1 MB. This 159 KB PNG qualifies.",
+        "Uploading it as the social preview requires the repo's GitHub settings UI or the GitHub REST API with a token that has repo scope. See reports/REMAINING_EXTERNAL_BLOCKERS.md#social-preview-upload."
+      ]
+    }
+  ],
+  "usage_policy": {
+    "recoloring": "never — assets must be used as authored; the theme choice is by picking the correct file, not by CSS-recoloring",
+    "rasterization": "already provided as derivatives/*.png; do not create additional rasterizations that differ from the source PNG bit-for-bit",
+    "stretching": "preserve aspect ratio; both vector files are 3437x578-582 and both raster PNGs are 1388x292 (~4.75:1)",
+    "replacement": "any replacement requires re-running scripts/inspect_branding.py + updating this MANIFEST.json + updating the SHA-256 checks in tests/test_branding.py"
+  },
+  "consumers": {
+    "readme": {
+      "file": "repository/deye/README.md",
+      "mechanism": "<picture> with <source media=\"(prefers-color-scheme: dark)\"> and <source media=\"(prefers-color-scheme: light)\">; fallback <img> is the light vector",
+      "dark_srcset": "assets/branding/D-Eye_Icon1.svg",
+      "light_srcset": "assets/branding/D-Eye_Icon21.svg",
+      "fallback": "assets/branding/D-Eye_Icon21.svg"
+    },
+    "plugin_manifest": {
+      "file": "repository/deye/plugin/d-eye/plugin.json",
+      "keys": ["logo_light_ref", "logo_dark_ref"]
+    },
+    "marketplace": {
+      "file": "repository/deye/plugin/d-eye/marketplace.json",
+      "keys": ["logo_reference", "raster_reference"]
+    }
+  }
+}
