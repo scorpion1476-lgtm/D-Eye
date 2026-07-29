@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
-from deye.connectors import rss, web_fetch, web_search
+from deye.connectors import github_repo, rss, web_fetch, web_search
 from deye.core.config import Config
 from deye.core.evidence import EvidenceStore
+from deye.core.graph import EvidenceGraph
 from deye.core.policy import ConsentPolicy
 from deye.core.provenance import Envelope, ResearchPacket
 from deye.core.registry import Registry
@@ -21,6 +22,7 @@ def build_registry(config: Config | None = None) -> Registry:
     for m in web_search.manifests(config):
         reg.register(m)
     reg.register(rss.manifest(config))
+    reg.register(github_repo.manifest(config))
     return reg
 
 
@@ -69,6 +71,20 @@ def research(router: Router, query: str, *, max_sources: int = 3,
         except Exception as exc:  # noqa: BLE001 -- persistence is best-effort
             results_env.warnings.append(f"evidence persistence skipped: {exc}")
     return packet
+
+
+def inspect_repo(router: Router, repo: str) -> Envelope:
+    """Read-only GitHub repository inspection (owner/name or a github URL)."""
+    return router.route("repo.inspect", {"repo": repo})
+
+
+def evidence_graph(query: str = "", *, config: Config | None = None,
+                   limit: int = 200) -> EvidenceGraph:
+    """Build the entity/claim graph (with contradiction candidates) over stored evidence."""
+    config = config or Config()
+    store = EvidenceStore(config.evidence_db)
+    rows = store.query(query or "", limit=limit)
+    return EvidenceGraph.from_sources(rows)
 
 
 def query_evidence(query: str, *, config: Config | None = None, limit: int = 20) -> dict:

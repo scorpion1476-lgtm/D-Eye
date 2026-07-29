@@ -28,6 +28,24 @@ def test_no_connector_raises():
     with pytest.raises(RouterError):
         Router(Registry()).route("nope", {})
 
+
+def test_audit_error_is_redacted():
+    # A connector error carrying a credential must not land in the audit log
+    # in cleartext (it feeds fallback to a healthy backend behind it).
+    class Leaky:
+        name="leaky"; capability="search"; is_write=False
+        def health(self): return HealthReport("leaky","ok")
+        def run(self, request):
+            raise RuntimeError("failed GET https://x?authorization=Bearer sk_user_ABCDEFGHIJKLMNOP1234")
+    r = Registry()
+    r.register(ConnectorManifest("leaky","search","MIT",preference=5,factory=lambda:Leaky()))
+    r.register(ConnectorManifest("good","search","MIT",preference=20,factory=lambda:Good()))
+    router = Router(r)
+    env = router.route("search", {"query":"hi"})
+    assert env.content == "ok"
+    blob = str(router.audit)
+    assert "sk_user_" not in blob and "[REDACTED]" in blob
+
 def test_write_blocked_by_default():
     import pytest
     r = Registry()

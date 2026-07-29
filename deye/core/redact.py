@@ -11,7 +11,10 @@ import re
 
 _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("bearer", re.compile(r"(?i)bearer\s+[A-Za-z0-9._\-]{12,}")),
-    ("authorization", re.compile(r"(?i)(authorization\s*[:=]\s*)([^\s\"']+)")),
+    # Capture the whole credential after "authorization:" -- not just the first
+    # token. "Basic <b64>", "Token <t>", "Digest ..." all carry the secret AFTER
+    # a scheme word and a space, so stopping at the first space leaked it.
+    ("authorization", re.compile(r"(?i)(authorization\s*[:=]\s*)([^\r\n]+)")),
     ("mcpmarket_user_token", re.compile(r"sk_user_[A-Za-z0-9]{16,}")),
     ("openai_key", re.compile(r"sk-[A-Za-z0-9]{20,}")),
     ("anthropic_key", re.compile(r"sk-ant-[A-Za-z0-9\-_]{20,}")),
@@ -39,6 +42,34 @@ def redact(text: str) -> str:
     return out
 
 
+# Header names whose entire value is a credential. The value alone carries no
+# textual anchor (e.g. "Basic dXNlcjpwYXNz"), so pattern-matching the value
+# cannot catch it -- redact by key instead.
+_CREDENTIAL_KEYS = frozenset({
+    "authorization",
+    "proxy-authorization",
+    "cookie",
+    "set-cookie",
+    "x-api-key",
+    "api-key",
+    "x-auth-token",
+    "x-amz-security-token",
+})
+
+
 def redact_mapping(data: dict) -> dict:
-    """Redact string values in a shallow mapping (e.g. HTTP headers)."""
-    return {k: (redact(v) if isinstance(v, str) else v) for k, v in data.items()}
+    """Redact string values in a shallow mapping (e.g. HTTP headers).
+
+    A value is redacted wholesale when its key is a known credential header
+    (the value has no self-describing prefix to match on); otherwise the value
+    is scanned for credential-shaped substrings.
+    """
+    out: dict = {}
+    for k, v in data.items():
+        if not isinstance(v, str):
+            out[k] = v
+        elif isinstance(k, str) and k.lower() in _CREDENTIAL_KEYS:
+            out[k] = _PLACEHOLDER
+        else:
+            out[k] = redact(v)
+    return out

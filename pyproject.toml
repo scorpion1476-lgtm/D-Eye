@@ -10,9 +10,9 @@ keywords = ["mcp", "agent", "capability-router", "evidence", "provenance", "ssrf
 dependencies = []  # core vertical slice is standard-library only, by design
 
 [project.optional-dependencies]
-mcp = ["mcp[cli]>=1.0"]
+mcp = ["mcp[cli]>=1.0,<2"]  # FastMCP API; mcp 2.x renamed it to MCPServer (breaking)
 secrets = ["keyring>=24.0"]
-remote = ["mcp[cli]>=1.0", "uvicorn>=0.30", "starlette>=0.37"]
+remote = ["mcp[cli]>=1.0,<2", "uvicorn>=0.30", "starlette>=0.37"]
 rich = ["feedparser>=6.0", "requests>=2.28"]
 dev = ["pytest>=8.0", "ruff>=0.8"]
 

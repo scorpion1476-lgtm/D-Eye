@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 from deye.core.policy import ConsentPolicy
 from deye.core.provenance import Envelope
+from deye.core.redact import redact
 from deye.core.registry import Registry
 
 
@@ -90,7 +91,10 @@ class Router:
                 return env
             except Exception as exc:  # noqa: BLE001 -- deliberate: try next backend
                 self._breaker(manifest.name).record(False)
-                self.audit.append({"connector": manifest.name, "ok": False, "error": str(exc)[:200]})
+                # Redact before truncating so a credential in the error (e.g. a
+                # tokenized URL) can't leak into the audit trail.
+                self.audit.append({"connector": manifest.name, "ok": False,
+                                   "error": redact(str(exc))[:200]})
                 last_error = f"{manifest.name}: {exc}"
                 continue
 

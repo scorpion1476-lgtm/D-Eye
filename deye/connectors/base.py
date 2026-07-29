@@ -15,7 +15,6 @@ then let urllib re-resolve DNS -- a TOCTOU/rebinding gap), this version:
 
 from __future__ import annotations
 
-import gzip
 import http.client
 import socket
 import ssl
@@ -54,21 +53,29 @@ class _PinnedHTTPSConnection(http.client.HTTPSConnection):
 
 def _decompress(body: bytes, encoding: str, cap: int) -> tuple[bytes, list[str]]:
     enc = (encoding or "").lower()
+    if enc == "gzip":
+        wbits = 16 + zlib.MAX_WBITS  # gzip header/trailer
+    elif enc in ("deflate", "zlib"):
+        wbits = zlib.MAX_WBITS  # zlib-wrapped deflate
+    else:
+        return body, []
+    # Bounded, incremental decompression: never materialize more than cap+1
+    # bytes, so a high-ratio "zip bomb" cannot exhaust memory before the size
+    # check runs. decompress(body, cap + 1) stops early and parks the rest in
+    # unconsumed_tail, which we treat as an overflow signal.
     try:
-        if enc == "gzip":
-            data = gzip.decompress(body)
-        elif enc in ("deflate", "zlib"):
-            data = zlib.decompress(body)
-        else:
-            return body, []
+        d = zlib.decompressobj(wbits)
+        data = d.decompress(body, cap + 1)
     except Exception as exc:  # noqa: BLE001
         return body, [f"decompression failed ({enc}): {exc}"]
-    if len(data) > cap:
+    if len(data) > cap or d.unconsumed_tail:
         return data[:cap], ["decompressed body exceeded cap; truncated (bomb guard)"]
     return data, []
 
 
-def _one_hop(url: str, limits: Limits, allowed_domains) -> tuple[int, dict, bytes]:
+def _one_hop(url: str, limits: Limits, allowed_domains, *,
+             method: str = "GET", body: bytes | None = None,
+             extra_headers: dict | None = None) -> tuple[int, dict, bytes]:
     decision = evaluate_url(url, allowed_domains=allowed_domains)
     if not decision.allowed:
         raise ConnectorError(f"blocked by policy: {decision.reason}")
@@ -82,6 +89,10 @@ def _one_hop(url: str, limits: Limits, allowed_domains) -> tuple[int, dict, byte
         "Accept-Encoding": "gzip, deflate",
         "Connection": "close",
     }
+    if extra_headers:
+        headers.update(extra_headers)
+    if body is not None:
+        headers.setdefault("Content-Length", str(len(body)))
     last_err = ""
     for pinned_ip in decision.resolved_ips:
         try:
@@ -92,7 +103,7 @@ def _one_hop(url: str, limits: Limits, allowed_domains) -> tuple[int, dict, byte
             else:
                 conn = _PinnedHTTPConnection(host, pinned_ip, port=port,
                                              timeout=limits.timeout_seconds)
-            conn.request("GET", path, headers=headers)
+            conn.request(method, path, body=body, headers=headers)
             resp = conn.getresponse()
             raw = resp.read(limits.max_bytes + 1)
             resp_headers = {k.lower(): v for k, v in resp.getheaders()}
@@ -129,6 +140,28 @@ def safe_get(url: str, *, limits: Limits, allowed_domains=None) -> tuple[bytes, 
             warnings.append(f"non-text content-type: {ctype}")
         return body, current, warnings
     raise ConnectorError("too many redirects")
+
+
+def safe_post(url: str, *, limits: Limits, body: bytes, headers: dict | None = None,
+              allowed_domains=None) -> tuple[bytes, int, list[str]]:
+    """Policy-gated, connection-pinned POST. Single hop (POST is not redirected).
+
+    Returns (decompressed_body, status, warnings). Extra *headers* (e.g. an
+    Authorization built from a resolved secret reference) are merged over the
+    defaults; the value itself is never logged here.
+    """
+    status, resp_headers, raw = _one_hop(
+        url, limits, allowed_domains, method="POST", body=body, extra_headers=headers,
+    )
+    warnings: list[str] = []
+    if status in (301, 302, 303, 307, 308):
+        raise ConnectorError(f"POST unexpectedly redirected (status {status}); refusing to follow")
+    if len(raw) > limits.max_bytes:
+        raw = raw[: limits.max_bytes]
+        warnings.append("response truncated at size limit")
+    out, dw = _decompress(raw, resp_headers.get("content-encoding", ""), limits.max_bytes)
+    warnings.extend(dw)
+    return out, status, warnings
 
 
 def timed_health(check) -> HealthReport:

@@ -1,34 +1,32 @@
-# D-Eye validation & test report (v0.2.0)
+# D-Eye — Test Report
 
-_Generated 2026-07-27T17:02:15Z. Independently executed in an isolated venv._
+**Date:** 2026-07-29 · **Branch:** feature/phase-b-hardening (Phase B; supersedes Phase A row below)
 
-## Environment (actual)
-- Python: Python 3.12.3
-- pytest: pytest 9.1.1
-- mcp SDK: installed (streamable-http verified)
-- OS: Linux 6.18.5 x86_64
+## Runs executed — Phase B (macOS, Python 3.14.3)
 
-## Test suite (actually executed)
-```
-$ python -m pytest -q
-    from starlette.testclient import TestClient
+| Environment | Command | Result |
+|---|---|---|
+| Core (standard library only) | `python -m pytest -q -rs` | **69 passed, 1 skipped** |
+| With MCP extras (`mcp[cli]==1.29.0`) | `pip install ".[remote]"` then `pytest -q -rs` | **73 passed, 0 skipped** |
+| SAST | `bandit -r deye` | 0 issues (all severities) |
+| Dependency audit | `pip-audit` | 0 known vulnerabilities |
+| CLI smoke | `deye status` / `deye doctor` | clean JSON; 4/5 connectors usable |
 
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-51 passed, 1 warning in 0.69s
-```
+Adds +7 regression tests for the Phase-B security fixes (redaction, decompression bomb, RSS DOCTYPE, router audit).
 
-Tests discovered: 51 (with the optional mcp/starlette/uvicorn extras installed). Result: all passed. Without those extras the 4 remote-auth tests skip cleanly (47 passed, 1 skipped) -- they are the only tests needing optional dependencies.
+## Runs executed — Phase A (2026-07-28, branch feature/phase-a-foundation)
 
-## Live checks actually performed during remediation
-- `py_compile` across all modules: OK.
-- CLI console script on PATH; `deye --version` -> 0.2.0; runs from arbitrary CWD (/tmp).
-- MCP self-test (SDK-free): OK. MCP tool dispatch: OK.
-- Connection-pinned HTTPS fetch of https://example.com: 200, cert validated.
-- SSRF: `fetch http://169.254.169.254/...` -> blocked ('non-public IP'), exit 1.
-- Evidence persistence: research wrote evidence.db; `deye evidence` queried it in a SEPARATE process.
-- Remote HTTP MCP (live uvicorn): refuses start w/o token; /healthz=200; /mcp no-token=401; wrong-token=401.
+| Environment | Command | Result |
+|---|---|---|
+| Core (standard library only) | `python3 -m pytest -q` | **62 passed, 1 skipped** |
+| With MCP extras (isolated venv) | `pytest -q` after `pip install "mcp[cli]" uvicorn starlette` | **66 passed** _(Phase A; superseded by 73 passed, 0 skipped above)_ |
+| SAST | `bandit -r deye` | 0 issues (all severities) |
+| Live integration | `deye repo psf/requests` | network path OK; GitHub rate-limit handled |
 
-## NOT verifiable in this environment (stated honestly)
-- Docker image BUILD/RUN: no Docker daemon in this sandbox. Dockerfile/compose provided and lint-reviewed, not built here.
-- Live end-to-end handshake from the actual Claude web client to the remote service (requires a hosted deployment).
-- macOS/Windows path handling: code uses pathlib + os-agnostic APIs; only Linux executed here. (v0.2.0-validated: init-claude path building exercised on macOS via Desktop Commander during install.)
+The single skip in the core run is `tests/test_remote_auth.py`, which imports the optional `mcp` package. With the extras installed it runs and passes. The current validated totals are **69 passed / 1 skipped** (core) and **73 passed / 0 skipped** (with MCP extras); the Phase-A "66" and older "51" figures are historical and not the current result.
+
+## New tests added (Phase A)
+- `tests/test_graph.py` — polarity + numeric contradiction detection, same-source suppression, export serialisation (5).
+- `tests/test_github_connector.py` — slug/URL parsing, envelope build, not-found handling (4).
+- `tests/test_exa_adapter.py` — keyless fallback, authenticated request build, answer mode (4).
+- `tests/test_rss_guard.py` — DOCTYPE rejection (billion-laughs) + normal-feed parse (2).

@@ -1,0 +1,91 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-07-29T15:01:35.836756+00:00",
+    "tools": [
+      {
+        "name": "deye-gen-sbom",
+        "version": "1.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "deye",
+      "version": "0.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:pypi/deye@0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "feedparser",
+      "scope": "optional",
+      "purl": "pkg:pypi/feedparser"
+    },
+    {
+      "type": "library",
+      "name": "keyring",
+      "scope": "optional",
+      "purl": "pkg:pypi/keyring"
+    },
+    {
+      "type": "library",
+      "name": "mcp",
+      "scope": "optional",
+      "purl": "pkg:pypi/mcp"
+    },
+    {
+      "type": "library",
+      "name": "pytest",
+      "scope": "optional",
+      "purl": "pkg:pypi/pytest"
+    },
+    {
+      "type": "library",
+      "name": "requests",
+      "scope": "optional",
+      "purl": "pkg:pypi/requests"
+    },
+    {
+      "type": "library",
+      "name": "ruff",
+      "scope": "optional",
+      "purl": "pkg:pypi/ruff"
+    },
+    {
+      "type": "library",
+      "name": "starlette",
+      "scope": "optional",
+      "purl": "pkg:pypi/starlette"
+    },
+    {
+      "type": "library",
+      "name": "uvicorn",
+      "scope": "optional",
+      "purl": "pkg:pypi/uvicorn"
+    }
+  ],
+  "properties": [
+    {
+      "name": "deye:core-runtime-deps",
+      "value": "none (standard library only)"
+    },
+    {
+      "name": "deye:declared-optional-deps",
+      "value": "feedparser, keyring, mcp, pytest, requests, ruff, starlette, uvicorn"
+    },
+    {
+      "name": "deye:sbom-scope",
+      "value": "declared-dependencies"
+    }
+  ]
+}

@@ -87,6 +87,27 @@ def cmd_evidence(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_repo(args, cfg: Config) -> int:
+    from deye.app import inspect_repo
+    env = inspect_repo(build_router(cfg), args.repo)
+    _print({"repo": args.repo, "warnings": env.warnings})
+    print("---")
+    _print(env.content)
+    return 0
+
+
+def cmd_graph(args, cfg: Config) -> int:
+    from deye.app import evidence_graph
+    g = evidence_graph(args.query or "", config=cfg)
+    if args.markdown:
+        out = args.output or (cfg.ensure_home() / "evidence_graph.md")
+        Path(out).write_text(g.to_markdown(), encoding="utf-8")
+        _print({**g.summary(), "markdown": str(out)})
+    else:
+        _print(g.to_dict())
+    return 0
+
+
 def cmd_serve_http(args, cfg: Config) -> int:
     """Remote mode: Streamable-HTTP MCP with enforced bearer auth."""
     try:
@@ -154,6 +175,14 @@ def build_parser() -> argparse.ArgumentParser:
     e = sub.add_parser("evidence", help="query the persistent evidence store")
     e.add_argument("query")
 
+    rp = sub.add_parser("repo", help="inspect a public GitHub repository (read-only)")
+    rp.add_argument("repo", help="owner/name or a github.com URL")
+
+    g = sub.add_parser("graph", help="build an evidence graph + contradiction candidates")
+    g.add_argument("query", nargs="?", default="", help="filter term (blank = recent evidence)")
+    g.add_argument("--markdown", action="store_true", help="write a Markdown report")
+    g.add_argument("--output", "-o", default=None)
+
     h = sub.add_parser("serve-http", help="run the remote Streamable-HTTP MCP (needs DEYE_HTTP_TOKEN)")
     h.add_argument("--host", default="127.0.0.1")
     h.add_argument("--port", type=int, default=8080)
@@ -164,7 +193,7 @@ _DISPATCH = {
     "setup": cmd_setup, "status": cmd_status, "capabilities": cmd_capabilities,
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
     "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
-    "init-claude": cmd_init_claude,
+    "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
 }
 
 

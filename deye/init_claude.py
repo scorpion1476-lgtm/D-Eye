@@ -13,7 +13,7 @@ import datetime
 import json
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404 - fixed argv, no shell, no untrusted input
 import sys
 from pathlib import Path
 
@@ -62,7 +62,7 @@ def write_desktop_config(python_exe: str | None = None, *, dry_run: bool = False
     path.parent.mkdir(parents=True, exist_ok=True)
     backup = None
     if path.exists():
-        stamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         backup = path.with_name(path.name + f".{stamp}.bak")
         shutil.copy2(path, backup)
     path.write_text(json.dumps(merged["data"], indent=2) + "\n")
@@ -83,7 +83,7 @@ def add_to_claude_code(python_exe: str | None = None, *, run: bool = False) -> d
     if shutil.which("claude") is None:
         return {"command": pretty, "ran": False, "note": "claude CLI not found on PATH"}
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60, check=False)  # nosec B603 - argv is a fixed, non-shell command list
         return {"command": pretty, "ran": True, "returncode": proc.returncode,
                 "stdout": proc.stdout[-2000:], "stderr": proc.stderr[-2000:]}
     except Exception as exc:  # noqa: BLE001
