@@ -1,5 +1,9 @@
 # D-Eye — Production Gap Matrix
 
+> **Current state (2026-07-29):** combined Phase A + Phase B on `feature/phase-b-hardening` (PR #1 into `main`). Tests: core 69/1, MCP 73/0. CI observed on the push/PR — tests, bandit, secret-scan, pip-audit, SBOM **pass**. `dependency-review` is red only because GHAS is unavailable in this private-repo plan — **BLOCKED BY EXTERNAL PLATFORM**; pip-audit already covers dependency CVEs; the Node 20 deprecation notice is advisory only.
+>
+> The matrix below is a **historical pre-integration record — superseded on 2026-07-29**; its "a green Actions run has not yet been observed" note no longer reflects the current state.
+
 **Baseline:** v0.2.0-validated · **Working branch:** feature/phase-a-foundation
 **Last updated:** 2026-07-28 (Phase A: evidence graph, GitHub + Exa connectors, security CI)
 **Method:** source inspection + real test execution + live GitHub read. No status is taken from the README on trust.
