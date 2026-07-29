@@ -148,6 +148,42 @@ def cmd_init_claude(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_lifecycle(args, cfg: Config) -> int:
+    """Dispatch to `deye lifecycle <verb>` subcommands (env, extras, repair, status, backup, restore, portable-export, portable-import, check-update, apply-update, rollback, uninstall)."""
+    from pathlib import Path as _P
+
+    from deye import lifecycle
+    verb = args.verb
+    if verb == "env":
+        _print(lifecycle.env_detect().to_dict()); return 0
+    if verb == "extras":
+        _print(lifecycle.detect_extras().to_dict()); return 0
+    if verb == "repair":
+        _print([s.to_dict() for s in lifecycle.repair_guidance()]); return 0
+    if verb == "status":
+        _print(lifecycle.aggregate_report()); return 0
+    if verb == "backup":
+        out = lifecycle.backup_home(_P(args.dest or (cfg.ensure_home().parent / "deye-backups")))
+        _print({"backup": str(out)}); return 0
+    if verb == "restore":
+        _print(lifecycle.restore_home(_P(args.archive), overwrite=args.overwrite)); return 0
+    if verb == "portable-export":
+        out = lifecycle.portable_config_export(_P(args.dest))
+        _print({"exported": str(out)}); return 0
+    if verb == "portable-import":
+        _print(lifecycle.portable_config_import(_P(args.src))); return 0
+    if verb == "check-update":
+        _print(lifecycle.check_update().to_dict()); return 0
+    if verb == "apply-update":
+        _print(lifecycle.apply_update(args.spec, dry_run=args.dry_run)); return 0
+    if verb == "rollback":
+        _print(lifecycle.rollback_to(args.version)); return 0
+    if verb == "uninstall":
+        _print(lifecycle.uninstall(remove_home=args.remove_home).to_dict()); return 0
+    _print({"error": f"unknown lifecycle verb: {verb}"})
+    return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="deye", description="D-Eye capability + evidence layer")
     p.add_argument("--version", action="version", version=f"deye {__version__}")
@@ -186,6 +222,30 @@ def build_parser() -> argparse.ArgumentParser:
     h = sub.add_parser("serve-http", help="run the remote Streamable-HTTP MCP (needs DEYE_HTTP_TOKEN)")
     h.add_argument("--host", default="127.0.0.1")
     h.add_argument("--port", type=int, default=8080)
+
+    lc = sub.add_parser("lifecycle", help="setup / update / backup / rollback / uninstall / repair")
+    lc_sub = lc.add_subparsers(dest="verb", required=True)
+    lc_sub.add_parser("env", help="detect OS, Python, browsers, CLIs")
+    lc_sub.add_parser("extras", help="report which optional extras are available")
+    lc_sub.add_parser("repair", help="actionable repair suggestions")
+    lc_sub.add_parser("status", help="aggregate lifecycle report (env + extras + repair)")
+    lc_b = lc_sub.add_parser("backup", help="tar.gz DEYE_HOME into dest_dir")
+    lc_b.add_argument("--dest", default=None)
+    lc_r = lc_sub.add_parser("restore", help="restore a home backup archive")
+    lc_r.add_argument("archive")
+    lc_r.add_argument("--overwrite", action="store_true")
+    lc_pe = lc_sub.add_parser("portable-export", help="export a portable config file")
+    lc_pe.add_argument("dest")
+    lc_pi = lc_sub.add_parser("portable-import", help="import a portable config file")
+    lc_pi.add_argument("src")
+    lc_sub.add_parser("check-update", help="report current + available version (offline-safe)")
+    lc_au = lc_sub.add_parser("apply-update", help="install a specific pip spec")
+    lc_au.add_argument("spec")
+    lc_au.add_argument("--dry-run", action="store_true")
+    lc_rb = lc_sub.add_parser("rollback", help="reinstall a specific D-Eye version")
+    lc_rb.add_argument("version")
+    lc_u = lc_sub.add_parser("uninstall", help="pip-uninstall D-Eye; optionally remove DEYE_HOME (always backed up)")
+    lc_u.add_argument("--remove-home", action="store_true")
     return p
 
 
@@ -194,6 +254,7 @@ _DISPATCH = {
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
     "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
     "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
+    "lifecycle": cmd_lifecycle,
 }
 
 

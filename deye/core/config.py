@@ -13,7 +13,19 @@ from pathlib import Path
 
 from deye.core.policy import Limits
 
-DEFAULT_HOME = Path(os.environ.get("DEYE_HOME", str(Path.home() / ".deye")))
+def _default_home() -> Path:
+    """Compute DEYE_HOME dynamically so DEYE_HOME env changes are honoured.
+
+    Previously this was a module-level constant, which meant tests that
+    swapped DEYE_HOME after import silently kept the pre-import value.
+    """
+    return Path(os.environ.get("DEYE_HOME", str(Path.home() / ".deye")))
+
+
+# Backwards-compat: some callers imported this name. It now snapshots the
+# env at import time (same historical behaviour); for dynamic reads, use
+# _default_home() or Config.load() directly.
+DEFAULT_HOME = _default_home()
 
 
 def resolve_secret(ref: str | None) -> str | None:
@@ -40,7 +52,7 @@ def resolve_secret(ref: str | None) -> str | None:
 
 @dataclass
 class Config:
-    home: Path = field(default_factory=lambda: DEFAULT_HOME)
+    home: Path = field(default_factory=_default_home)
     limits: Limits = field(default_factory=Limits)
     # provider/adapter secret *references* only:
     search_provider: str = "duckduckgo"  # FOSS-first default, no key required
@@ -61,8 +73,11 @@ class Config:
 
     @classmethod
     def load(cls, path: Path | None = None) -> Config:
-        path = path or (DEFAULT_HOME / "config.json")
-        cfg = cls()
+        # Re-read the env every call so DEYE_HOME changes take effect
+        # (test isolation, per-tenant homes, etc.).
+        home = _default_home()
+        path = path or (home / "config.json")
+        cfg = cls(home=home)
         if path.exists():
             data = json.loads(path.read_text())
             cfg.search_provider = data.get("search_provider", cfg.search_provider)

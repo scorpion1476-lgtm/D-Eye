@@ -5,7 +5,16 @@
 
 from __future__ import annotations
 
-from deye.connectors import github_repo, rss, web_fetch, web_search
+from deye.connectors import (
+    github_repo,
+    reddit,
+    rss,
+    social_stub,
+    v2ex,
+    web_fetch,
+    web_search,
+    youtube,
+)
 from deye.core.config import Config
 from deye.core.evidence import EvidenceStore
 from deye.core.graph import EvidenceGraph
@@ -23,6 +32,14 @@ def build_registry(config: Config | None = None) -> Registry:
         reg.register(m)
     reg.register(rss.manifest(config))
     reg.register(github_repo.manifest(config))
+    for m in reddit.manifests(config):
+        reg.register(m)
+    for m in youtube.manifests(config):
+        reg.register(m)
+    for m in v2ex.manifests(config):
+        reg.register(m)
+    for m in social_stub.manifests(config):
+        reg.register(m)
     return reg
 
 
