@@ -13,6 +13,8 @@ from deye.connectors import (
     v2ex,
     web_fetch,
     web_search,
+    xiaoyuzhou,
+    xueqiu,
     youtube,
 )
 from deye.core.config import Config
@@ -37,6 +39,10 @@ def build_registry(config: Config | None = None) -> Registry:
     for m in youtube.manifests(config):
         reg.register(m)
     for m in v2ex.manifests(config):
+        reg.register(m)
+    for m in xueqiu.manifests(config):
+        reg.register(m)
+    for m in xiaoyuzhou.manifests(config):
         reg.register(m)
     for m in social_stub.manifests(config):
         reg.register(m)

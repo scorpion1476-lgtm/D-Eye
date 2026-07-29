@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "deye": {
+      "command": "python3",
+      "args": ["-m", "deye.mcp_server"],
+      "env": {
+        "DEYE_READ_ONLY": "1"
+      },
+      "description": "Local D-Eye MCP server: search, fetch, extract, evidence, research packet, connector health, capability listing, surface status."
+    }
+  }
+}

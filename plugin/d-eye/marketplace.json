@@ -1,0 +1,24 @@
+{
+  "name": "d-eye",
+  "version": "0.2.0",
+  "kind": "claude-plugin",
+  "summary": "FOSS-first capability + evidence layer for AI agents. Local MCP server, keyless connectors, SSRF-hardened fetch, cited research packets.",
+  "description_file": "README.md",
+  "license": "MIT",
+  "homepage": "local",
+  "safety_flags": [
+    "no_remote_skill_downloading",
+    "read_only_default",
+    "no_silent_telemetry",
+    "cookies_stay_local"
+  ],
+  "install_hint": {
+    "claude_code": "claude plugin install ./plugin/d-eye",
+    "manual_mcp_config": "cp plugin/d-eye/mcp.json ~/.config/claude/mcp_servers.d/deye.json"
+  },
+  "verification": {
+    "sbom_reference": "build-artifacts/sbom-declared.json",
+    "test_evidence_reference": "reports/TEST_EVIDENCE.md",
+    "changelog_reference": "CHANGELOG.md"
+  }
+}

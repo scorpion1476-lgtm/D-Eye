@@ -1,0 +1,26 @@
+{
+  "name": "d-eye",
+  "version": "0.2.0",
+  "description": "D-Eye — FOSS-first capability + evidence layer for AI agents. Local MCP server, keyless connectors, provenance-tracked research packets, read-only-by-default policy.",
+  "license": "MIT",
+  "homepage": "local",
+  "author": "D-Eye contributors",
+  "keywords": ["mcp", "research", "evidence", "provenance", "foss", "local-first", "ssrf-hardened"],
+  "components": {
+    "mcp_config": "mcp.json",
+    "hooks": "hooks/hooks.json",
+    "skills": "skills",
+    "commands": "commands"
+  },
+  "requirements": {
+    "python_version": ">=3.10",
+    "extras_recommended": ["mcp"]
+  },
+  "safety": {
+    "read_only_default": true,
+    "no_remote_skill_downloading": true,
+    "no_silent_telemetry": true,
+    "consent_required_for_writes": true,
+    "cookies_never_uploaded": true
+  }
+}
