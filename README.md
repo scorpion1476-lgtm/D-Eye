@@ -1,8 +1,8 @@
 <p align="left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/D-Eye_Icon1.svg" width="180">
-    <source media="(prefers-color-scheme: light)" srcset="assets/branding/D-Eye_Icon21.svg" width="180">
-    <img alt="D-Eye" src="assets/branding/D-Eye_Icon21.svg" width="180" height="32">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/D-Eye_Icon1.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/branding/D-Eye_Icon21.svg">
+    <img alt="D-Eye" src="assets/branding/derivatives/D-Eye_light.png" width="180">
   </picture>
 </p>
 

@@ -200,15 +200,36 @@ def test_readme_light_source_points_at_light_asset(manifest):
 def test_readme_fallback_img_is_a_light_asset(manifest):
     """The <img> inside <picture> is what non-<picture>-aware renderers
     show. It must be a light asset because GitHub's default markdown
-    card background is light."""
+    card background is light. The fallback may be either an SVG asset
+    (theme=light) or a PNG derivative whose source_asset is theme=light
+    (PNG derivatives render at the requested width more reliably than
+    SVGs whose intrinsic width attribute may override the outer width)."""
     text = README.read_text()
     m = re.search(r'<img[^>]+src="([^"]+)"', text)
     assert m, "no <img> fallback in README"
     ref = m.group(1)
+    # Try direct asset match first
     asset = next((a for a in manifest["assets"]
                   if a["path_in_repo"] == ref), None)
-    assert asset is not None
-    assert asset["theme"] == "light"
+    if asset is not None:
+        assert asset["theme"] == "light", (
+            f"fallback src {ref!r} is a {asset['theme']!r} asset; "
+            "must be light because GitHub's default markdown card is light"
+        )
+        return
+    # Otherwise it must be a derivative of a theme=light asset
+    derivative = next((d for d in manifest.get("derivatives", [])
+                       if d["path_in_repo"] == ref), None)
+    assert derivative is not None, (
+        f"fallback src {ref!r} is neither a manifest asset nor a "
+        "manifest derivative"
+    )
+    source_id = derivative["source_asset_id"]
+    source = next(a for a in manifest["assets"] if a["id"] == source_id)
+    assert source["theme"] == "light", (
+        f"fallback derivative {ref!r} was derived from a {source['theme']!r} "
+        "asset; must be derived from a light asset"
+    )
 
 
 # ---------------------------------------------------------------------------
