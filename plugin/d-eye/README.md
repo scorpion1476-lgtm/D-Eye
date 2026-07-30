@@ -7,14 +7,14 @@ source-quality / offline / connector-builder tools.
 
 Skills (each with its own `SKILL.md`):
 
-- `research`             — decompose → search → fetch → cite → store
-- `evidence`             — record, dedupe, change-monitor, export, delete
-- `web_discovery`        — public web + RSS + repositories, all read-only
-- `browser_research`     — isolated local browser, consent-gated writes
-- `repository_research`  — repository + file + issue + release lookups
-- `source_quality`       — quality score + contradiction analysis
-- `offline_research`     — no-network mode over local evidence + indexes
-- `connector_builder`    — scaffold a new connector against the D-Eye contract
+- `research`             - decompose → search → fetch → cite → store
+- `evidence`             - record, dedupe, change-monitor, export, delete
+- `web_discovery`        - public web + RSS + repositories, all read-only
+- `browser_research`     - isolated local browser, consent-gated writes
+- `repository_research`  - repository + file + issue + release lookups
+- `source_quality`       - quality score + contradiction analysis
+- `offline_research`     - no-network mode over local evidence + indexes
+- `connector_builder`    - scaffold a new connector against the D-Eye contract
 
 Safety properties (each asserted as a testable manifest flag):
 

@@ -1,4 +1,4 @@
-# D-Eye — Connector Guide
+# D-Eye - Connector Guide
 
 Connectors turn a capability request (`search`, `fetch`, `feed`,
 `repo.inspect`, `extract`) into an `Envelope` with provenance +
@@ -12,7 +12,7 @@ Every connector class:
 - implements `health() -> HealthReport` (fast, no network required);
 - implements `run(request: dict) -> Envelope`;
 - uses `deye.connectors.base.safe_get` / `safe_post` for network
-  access — never raw urllib or requests.
+  access - never raw urllib or requests.
 
 Every connector module exports either `manifest(config)` (single
 manifest) or `manifests(config)` (list) so `deye/app.py::build_registry`
@@ -40,11 +40,11 @@ that reports `HealthReport(status="missing")` with a truthful reason.
 The row stays in the catalogue with a `BLOCKED BY EXTERNAL PLATFORM`
 status; a real adapter can later be shipped as an opt-in extra.
 
-- `twitter_x` — free API tier deprecated.
-- `linkedin` — ToS forbid unauthenticated scraping.
-- `facebook` / `instagram` — Meta Graph API required.
-- `bilibili` — no documented keyless public search.
-- `xiaohongshu` — no documented public API.
+- `twitter_x` - free API tier deprecated.
+- `linkedin` - ToS forbid unauthenticated scraping.
+- `facebook` / `instagram` - Meta Graph API required.
+- `bilibili` - no documented keyless public search.
+- `xiaohongshu` - no documented public API.
 
 ## Writing a new connector
 

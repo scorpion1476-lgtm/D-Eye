@@ -1,7 +1,7 @@
 """Xiaoyuzhou (小宇宙 FM) read-only public podcast connector.
 
 Xiaoyuzhou publishes podcast episode pages at
-`https://www.xiaoyuzhoufm.com/episode/<episode_id>` — publicly
+`https://www.xiaoyuzhoufm.com/episode/<episode_id>` - publicly
 crawlable. This connector fetches an episode page through the
 policy-gated `safe_get`.
 

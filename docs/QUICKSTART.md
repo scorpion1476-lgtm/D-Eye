@@ -1,4 +1,4 @@
-# D-Eye — Quickstart
+# D-Eye - Quickstart
 
 _Ten minutes from clean machine to first cited research packet._
 
@@ -92,11 +92,11 @@ Details in [`OFFLINE_MODE.md`](OFFLINE_MODE.md).
 
 ## Where to next
 
-- [`USER_GUIDE.md`](USER_GUIDE.md) — end-user command tour.
-- [`CLI_GUIDE.md`](CLI_GUIDE.md) — every CLI subcommand + flag.
-- [`MCP_GUIDE.md`](MCP_GUIDE.md) — local + remote MCP deployment.
-- [`SKILLS_GUIDE.md`](SKILLS_GUIDE.md) — the 8 D-Eye skills.
-- [`CONNECTOR_GUIDE.md`](CONNECTOR_GUIDE.md) — using + writing connectors.
-- [`BROWSER_RESEARCH_GUIDE.md`](BROWSER_RESEARCH_GUIDE.md) — optional browser adapter.
-- [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — common issues + fixes.
-- [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) — extend D-Eye.
+- [`USER_GUIDE.md`](USER_GUIDE.md) - end-user command tour.
+- [`CLI_GUIDE.md`](CLI_GUIDE.md) - every CLI subcommand + flag.
+- [`MCP_GUIDE.md`](MCP_GUIDE.md) - local + remote MCP deployment.
+- [`SKILLS_GUIDE.md`](SKILLS_GUIDE.md) - the 8 D-Eye skills.
+- [`CONNECTOR_GUIDE.md`](CONNECTOR_GUIDE.md) - using + writing connectors.
+- [`BROWSER_RESEARCH_GUIDE.md`](BROWSER_RESEARCH_GUIDE.md) - optional browser adapter.
+- [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) - common issues + fixes.
+- [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) - extend D-Eye.

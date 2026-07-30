@@ -1,4 +1,4 @@
-"""D-Eye provider-neutral backend — local, stdlib-only defaults.
+"""D-Eye provider-neutral backend - local, stdlib-only defaults.
 
 This package implements Category 10 (provider-neutral backend +
 workflow) plus rows in Category 6 (deletion/export) and Category 11
@@ -38,7 +38,7 @@ from deye.core.redact import redact
 
 
 # ---------------------------------------------------------------------------
-# 1. AuthStore — local user store with scrypt password hashing
+# 1. AuthStore - local user store with scrypt password hashing
 # ---------------------------------------------------------------------------
 
 _AUTH_SCHEMA = """
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 """
 
-_SCRYPT_N = 2 ** 14  # 16384 — CPU cost
+_SCRYPT_N = 2 ** 14  # 16384 - CPU cost
 _SCRYPT_R = 8
 _SCRYPT_P = 1
 _HASH_LEN = 32
@@ -155,7 +155,7 @@ class AuthStore:
 
 
 # ---------------------------------------------------------------------------
-# 2. Queue — SQLite-backed FIFO job queue
+# 2. Queue - SQLite-backed FIFO job queue
 # ---------------------------------------------------------------------------
 
 _QUEUE_SCHEMA = """
@@ -202,7 +202,7 @@ class Queue:
             )
             return cur.lastrowid
 
-    # Four pre-built parameterised queries — one per topic+tenant combination.
+    # Four pre-built parameterised queries - one per topic+tenant combination.
     # Bandit B608 flagged the earlier dynamic-string version even though every
     # dynamic value goes through a `?` placeholder; this variant removes any
     # string concatenation so the static analyzer stays clean and the intent
@@ -270,7 +270,7 @@ class Queue:
 
 
 # ---------------------------------------------------------------------------
-# 3. ObjectStore — filesystem SHA-256 addressable storage
+# 3. ObjectStore - filesystem SHA-256 addressable storage
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -321,7 +321,7 @@ class ObjectStore:
 
 
 # ---------------------------------------------------------------------------
-# 4. RBAC — owner / user / service scopes
+# 4. RBAC - owner / user / service scopes
 # ---------------------------------------------------------------------------
 
 ROLES = ("owner", "user", "service")
@@ -361,7 +361,7 @@ class RBAC:
 
 
 # ---------------------------------------------------------------------------
-# 5. JSONLogger — structured stdout logs, redacted
+# 5. JSONLogger - structured stdout logs, redacted
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -422,7 +422,7 @@ def prometheus_text(metrics: Iterable[dict]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 7. Lifecycle — export + delete per owner/tenant
+# 7. Lifecycle - export + delete per owner/tenant
 # ---------------------------------------------------------------------------
 
 @dataclass

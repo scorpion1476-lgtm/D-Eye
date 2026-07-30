@@ -1,4 +1,4 @@
-# D-Eye — Browser Research Guide
+# D-Eye - Browser Research Guide
 
 D-Eye ships an **optional** browser adapter behind the `[browser]`
 extras group. The core install does not include Playwright; nothing
@@ -31,17 +31,17 @@ call returns a structured `ok=False` with the install hint.
 
 ## Read-only surface
 
-- `render_html(url)` — return the DOM after JS execution.
-- `screenshot(url, path)` — write a PNG to `path`.
-- `a11y_snapshot(url)` — Playwright accessibility snapshot.
+- `render_html(url)` - return the DOM after JS execution.
+- `screenshot(url, path)` - write a PNG to `path`.
+- `a11y_snapshot(url)` - Playwright accessibility snapshot.
 
 These require Playwright but not consent.
 
 ## Write surface (consent-gated)
 
-- `navigate_and_click(url, selector)` — needs `browser.click` in
+- `navigate_and_click(url, selector)` - needs `browser.click` in
   `granted_actions`.
-- `fill_form(url, fields)` — needs `browser.fill_form` in
+- `fill_form(url, fields)` - needs `browser.fill_form` in
   `granted_actions`.
 
 Example:
@@ -70,14 +70,14 @@ profiles.list_profiles()
 profiles.remove_profile("work", confirm=True)
 ```
 
-Names allowlisted to `^[A-Za-z0-9_-]{1,40}$` — no traversal, no
+Names allowlisted to `^[A-Za-z0-9_-]{1,40}$` - no traversal, no
 whitespace, no oversize.
 
 ## Fallback
 
 Every browser method returns `BrowserResult(ok=False, reason=...)` when
 Playwright is unavailable. Callers can treat that as "fall back to the
-direct HTTP fetch path" — no exception, no silent success.
+direct HTTP fetch path" - no exception, no silent success.
 
 ## Tests
 

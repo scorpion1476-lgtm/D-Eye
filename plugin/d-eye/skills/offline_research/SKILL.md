@@ -16,14 +16,14 @@ run without network, or answer from previously captured sources.
 
 **How to use.** Invoke the in-process `offline_research` skill:
 
-- `mode="fast"` — BM25 top-N.
-- `mode="deep"` — wider recall + phrase-boost re-rank.
-- `mode="answer"` — extractive grounded answer over the top hits.
+- `mode="fast"` - BM25 top-N.
+- `mode="deep"` - wider recall + phrase-boost re-rank.
+- `mode="answer"` - extractive grounded answer over the top hits.
 
 **Safety rules.**
 
 - Never touches the network.
-- Never invents tokens — every answer is composed of verbatim excerpts
+- Never invents tokens - every answer is composed of verbatim excerpts
   with citations.
 - Reports `offline_env=True` iff `DEYE_OFFLINE=1` is set.
 

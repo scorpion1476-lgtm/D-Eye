@@ -17,9 +17,9 @@ def run(*, rows: list[dict] | None = None,
     """Score a set of source rows and detect candidate contradictions.
 
     Input:
-        rows              — list of dicts shaped like `EvidenceStore.query()`
+        rows              - list of dicts shaped like `EvidenceStore.query()`
                             output (url, title, excerpt, content_hash, ...).
-        min_confidence    — floor on contradiction confidence to include in
+        min_confidence    - floor on contradiction confidence to include in
                             the returned findings (default 0.5).
 
     Output:
@@ -30,7 +30,7 @@ def run(*, rows: list[dict] | None = None,
           "notes": [...]
         }
 
-    Confidence scores are heuristic — not learned NLI. Every score comes
+    Confidence scores are heuristic - not learned NLI. Every score comes
     with the factors that produced it so callers can adjudicate.
     """
     rows = rows or []
@@ -45,7 +45,7 @@ def run(*, rows: list[dict] | None = None,
         "contradictions": contradictions,
         "notes": [
             ("Contradiction confidence scores are heuristic (polarity + "
-             "numeric) — treat as leads for human review, not facts."),
+             "numeric) - treat as leads for human review, not facts."),
             ("Every source score exposes its factors + reasons under "
              "quality.scores_by_url."),
         ],

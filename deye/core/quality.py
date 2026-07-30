@@ -1,10 +1,10 @@
-"""Evidence quality primitives — deterministic, stdlib-only.
+"""Evidence quality primitives - deterministic, stdlib-only.
 
 Complements `deye/core/graph.py` (contradiction detection) with:
 
-* `score_source(...)`   — deterministic source-quality score in [0, 1]
-* `deduplicate(rows)`   — normalise + hash-cluster near-duplicate rows
-* `change_monitor(...)` — schedule/report re-check candidates from an
+* `score_source(...)`   - deterministic source-quality score in [0, 1]
+* `deduplicate(rows)`   - normalise + hash-cluster near-duplicate rows
+* `change_monitor(...)` - schedule/report re-check candidates from an
   `EvidenceStore` based on `changed_since`
 
 Everything is heuristic, high-precision, and audit-friendly: no ML, no
@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 _WORD = re.compile(r"[a-z0-9]+")
 
-# Trusted-source lists — extended by callers via `trusted_domains=...`.
+# Trusted-source lists - extended by callers via `trusted_domains=...`.
 # Kept intentionally small and neutral; project-specific lists belong in
 # config.
 DEFAULT_TRUSTED_DOMAINS: frozenset[str] = frozenset({
@@ -283,7 +283,7 @@ def change_monitor(store, urls: list[str]) -> list[ChangeReport]:
     prior record in the given `EvidenceStore`.
 
     Uses the built-in `EvidenceStore.changed_since(url)` (already tested;
-    kept identical in semantics — this function just batches).
+    kept identical in semantics - this function just batches).
     """
     out: list[ChangeReport] = []
     for u in urls:

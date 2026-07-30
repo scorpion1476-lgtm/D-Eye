@@ -27,7 +27,7 @@ via `deye.skills.invoke("evidence", action="graph|quality|...")`.
   The default tenant is the owner scope and cannot be deleted via a
   tenant-scoped call.
 - `export` returns a JSON bundle scoped strictly to the requested tenant.
-- Contradiction confidences are heuristic — treat as leads for review.
+- Contradiction confidences are heuristic - treat as leads for review.
 
 **Example.**
 

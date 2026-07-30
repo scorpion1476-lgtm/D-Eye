@@ -26,7 +26,7 @@ page, take a screenshot, or capture the accessibility tree of a page.
 
 **Safety rules.**
 
-- Every session uses `storage_state=None` — no cookie carry-over.
+- Every session uses `storage_state=None` - no cookie carry-over.
 - Cookies never leave the device (CookieBoundary audit log records
   every event; `uploads_recorded()` must be 0).
 - Write actions (click, fill_form) require

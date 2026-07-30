@@ -16,15 +16,15 @@ D-Eye with a new source, or scaffold connector boilerplate.
 
 **How to use.** Invoke the in-process `connector_builder` skill with:
 
-- `name`         — snake_case module name (validated).
-- `capability`   — one of `search`, `fetch`, `feed`, `repo.inspect`, `extract`.
-- `description`  — one-line docstring.
-- `license`      — SPDX identifier for the target-service licence.
-- `out_path`     — optional path; if omitted, module text is returned.
+- `name`         - snake_case module name (validated).
+- `capability`   - one of `search`, `fetch`, `feed`, `repo.inspect`, `extract`.
+- `description`  - one-line docstring.
+- `license`      - SPDX identifier for the target-service licence.
+- `out_path`     - optional path; if omitted, module text is returned.
 
 **Safety rules.**
 
-- Generated code routes through `safe_get` — never raw `urllib`.
+- Generated code routes through `safe_get` - never raw `urllib`.
 - Every generated connector returns `trust.untrusted=True`.
 - The user must still: customise the `run()` method, add a test with a
   monkeypatched `safe_get`, and register the manifest in

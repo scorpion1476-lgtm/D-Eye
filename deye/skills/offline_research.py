@@ -27,9 +27,9 @@ def run(*, query: str,
     """Run an offline research query over the local evidence store.
 
     Modes:
-        "fast"  — BM25 top-N via the local FTS5 index.
-        "deep"  — wider recall + phrase-boost re-rank.
-        "answer" — build an extractive grounded answer using the top hits.
+        "fast"  - BM25 top-N via the local FTS5 index.
+        "deep"  - wider recall + phrase-boost re-rank.
+        "answer" - build an extractive grounded answer using the top hits.
 
     Never touches the network. Never invents tokens.
     """

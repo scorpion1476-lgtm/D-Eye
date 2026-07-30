@@ -1,7 +1,7 @@
 {
   "name": "d-eye",
   "version": "0.2.0",
-  "description": "D-Eye — FOSS-first capability + evidence layer for AI agents. Local MCP server, keyless connectors, provenance-tracked research packets, read-only-by-default policy.",
+  "description": "D-Eye - FOSS-first capability + evidence layer for AI agents. Local MCP server, keyless connectors, provenance-tracked research packets, read-only-by-default policy.",
   "license": "MIT",
   "homepage": "local",
   "author": "D-Eye contributors",

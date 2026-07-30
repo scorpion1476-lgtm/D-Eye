@@ -1,4 +1,4 @@
-# D-Eye — Skills Guide
+# D-Eye - Skills Guide
 
 D-Eye skills are named orchestration recipes composed from the well-
 tested D-Eye primitives (router, evidence store, quality, research,
@@ -21,7 +21,7 @@ for s in list_skills():
 result = invoke("research", query="continuous pricing", max_sources=3)
 ```
 
-`invoke("<name>", **kwargs)` — the skill name is positional-only, so
+`invoke("<name>", **kwargs)` - the skill name is positional-only, so
 kwargs like `name="my_source"` (used by `connector_builder`) never
 collide with the lookup key.
 

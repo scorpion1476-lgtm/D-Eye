@@ -1,15 +1,15 @@
-# D-Eye — User Guide
+# D-Eye - User Guide
 
 _Task-oriented guide for people who want to use D-Eye, not extend it._
 
 ## Concept map (30 seconds)
 
-- **Capability** — a verb the router understands (`search`, `fetch`, `feed`, `repo.inspect`, `extract`).
-- **Connector** — a plugin that implements one or more capabilities.
-- **Envelope** — one search result / fetched page + provenance + trust + warnings.
-- **Research packet** — a bundle of envelopes with one query header, exportable as Markdown or JSON.
-- **Evidence store** — SQLite database at `~/.deye/evidence.db` that persists every packet + source.
-- **Skill** — a named orchestration recipe (see [`SKILLS_GUIDE.md`](SKILLS_GUIDE.md)).
+- **Capability** - a verb the router understands (`search`, `fetch`, `feed`, `repo.inspect`, `extract`).
+- **Connector** - a plugin that implements one or more capabilities.
+- **Envelope** - one search result / fetched page + provenance + trust + warnings.
+- **Research packet** - a bundle of envelopes with one query header, exportable as Markdown or JSON.
+- **Evidence store** - SQLite database at `~/.deye/evidence.db` that persists every packet + source.
+- **Skill** - a named orchestration recipe (see [`SKILLS_GUIDE.md`](SKILLS_GUIDE.md)).
 
 ## Common tasks
 
@@ -51,7 +51,7 @@ deye graph "topic" --markdown -o graph.md
 ```
 
 Includes entity list + candidate contradictions with confidence scores.
-Contradiction confidences are heuristic — treat them as leads for review.
+Contradiction confidences are heuristic - treat them as leads for review.
 
 ### Check that every connector is healthy
 
@@ -74,7 +74,7 @@ deye connectors
   Nothing is uploaded off-device.
 - Cookies used by the optional browser adapter live under
   `~/.deye/browser-profiles/` with owner-only permissions.
-- There is no telemetry endpoint anywhere in D-Eye — enforced by
+- There is no telemetry endpoint anywhere in D-Eye - enforced by
   `tests/test_no_telemetry_and_no_remote_skills.py`.
 - To export or delete a tenant's data:
 

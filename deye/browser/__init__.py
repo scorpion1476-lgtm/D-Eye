@@ -50,7 +50,7 @@ def _probe() -> tuple[bool, str]:
     try:
         import playwright  # noqa: F401
     except ImportError:
-        return False, ("playwright not installed — install with "
+        return False, ("playwright not installed - install with "
                        "`pip install -e '.[browser]'` and "
                        "`playwright install chromium`")
     try:
@@ -89,7 +89,7 @@ class BrowserResult:
 
 
 # ---------------------------------------------------------------------------
-# Adapter — always constructable; degrades cleanly when playwright absent
+# Adapter - always constructable; degrades cleanly when playwright absent
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -97,7 +97,7 @@ class BrowserAdapter:
     """Browser adapter with per-session isolation and consent gating.
 
     Use as a context manager. When Playwright is absent, every method
-    returns `BrowserResult(ok=False, reason=...)` rather than raising —
+    returns `BrowserResult(ok=False, reason=...)` rather than raising -
     downstream code can degrade to the direct HTTP fetch path.
     """
     consent: ConsentPolicy = field(default_factory=ConsentPolicy)
@@ -232,7 +232,7 @@ class BrowserAdapter:
 
 
 # ---------------------------------------------------------------------------
-# Cookie boundary — every operation records to a local log, never uploads
+# Cookie boundary - every operation records to a local log, never uploads
 # ---------------------------------------------------------------------------
 
 @dataclass

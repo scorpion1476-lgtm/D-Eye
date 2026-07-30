@@ -3,11 +3,11 @@
 ## 0.3.0-dev (unreleased) - Phase B: security hardening & supply chain (2026-07-29)
 Security
 - Credential redaction: `redact_mapping` now redacts by credential *header key*
-  (Authorization/Cookie/X-Api-Key/…) — value-only scanning leaked `Basic`/`Token`/
+  (Authorization/Cookie/X-Api-Key/…) - value-only scanning leaked `Basic`/`Token`/
   `Digest` auth and API keys. Inline `authorization` pattern captures the whole
   credential, not just the scheme word.
 - Decompression-bomb guard: bounded incremental decompression
-  (`zlib.decompressobj().decompress(body, cap+1)`) — the previous cap ran only
+  (`zlib.decompressobj().decompress(body, cap+1)`) - the previous cap ran only
   after `gzip.decompress()` fully expanded the body, allowing a small gzip bomb
   to OOM the process.
 - RSS/Atom DOCTYPE guard: replaced the 8 KiB-window scan (bypassable with a large

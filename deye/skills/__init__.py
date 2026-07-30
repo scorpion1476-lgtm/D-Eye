@@ -42,7 +42,7 @@ class Skill:
 
 
 # Import concrete skills so REGISTRY is populated on `import deye.skills`.
-from deye.skills import (  # noqa: E402  — after Skill dataclass definition
+from deye.skills import (  # noqa: E402  - after Skill dataclass definition
     browser_research,
     connector_builder,
     evidence as evidence_skill,

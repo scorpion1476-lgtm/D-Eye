@@ -1,4 +1,4 @@
-"""V2EX read-only connector — public JSON API, no key required.
+"""V2EX read-only connector - public JSON API, no key required.
 
 V2EX exposes public JSON endpoints for hot / latest / show:
   https://www.v2ex.com/api/topics/hot.json

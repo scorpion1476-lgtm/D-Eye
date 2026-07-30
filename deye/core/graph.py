@@ -246,7 +246,7 @@ class EvidenceGraph:
             lines.append("")
             for i, c in enumerate(self.contradictions, 1):
                 lines += [
-                    (f"### [{i}] {c.kind} — confidence {c.confidence:.2f} "
+                    (f"### [{i}] {c.kind} - confidence {c.confidence:.2f} "
                     f"(subject: {c.subject})"),
                     "",
                     f"- {c.detail}",

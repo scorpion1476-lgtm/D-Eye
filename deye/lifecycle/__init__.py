@@ -47,7 +47,7 @@ from deye import __version__
 class EnvironmentReport:
     """Snapshot of the host + interpreter D-Eye is running under.
 
-    Purely observational — never mutates the machine.
+    Purely observational - never mutates the machine.
     """
     os_name: str
     os_version: str
@@ -79,7 +79,7 @@ def env_detect(home: Path | None = None) -> EnvironmentReport:
     is_venv = sys.prefix != sys.base_prefix
     if not is_venv:
         warnings.append(
-            "not running inside a venv — install into a virtualenv or pipx to "
+            "not running inside a venv - install into a virtualenv or pipx to "
             "keep D-Eye isolated"
         )
     stdlib_ok = bool(sysconfig.get_paths().get("stdlib")) and sys.version_info >= (3, 10)
@@ -167,13 +167,13 @@ def detect_extras() -> ExtrasReport:
 def provision_extra(name: str, *, python: str | None = None, offline: bool = False) -> dict:
     """Install one extras group using the given Python's pip. Never runs pip -U.
 
-    Refuses to run when DEYE_OFFLINE=1 or offline=True — provisioning is a
+    Refuses to run when DEYE_OFFLINE=1 or offline=True - provisioning is a
     network action, and the offline contract must hold.
     """
     if name not in KNOWN_EXTRAS:
         raise ValueError(f"unknown extra {name!r}; known: {sorted(KNOWN_EXTRAS)}")
     if offline or os.environ.get("DEYE_OFFLINE", "").lower() in {"1", "true", "yes"}:
-        return {"ok": False, "reason": "offline mode — provisioning skipped"}
+        return {"ok": False, "reason": "offline mode - provisioning skipped"}
     py = python or sys.executable
     cmd = [py, "-m", "pip", "install", "-e", f".[{name}]"]
     proc = subprocess.run(cmd, check=False, capture_output=True, text=True)
@@ -300,7 +300,7 @@ def check_update(*, offline: bool = False) -> UpdateReport:
         return UpdateReport(
             current_version=__version__,
             available_version=None,
-            reason="offline mode — network check skipped",
+            reason="offline mode - network check skipped",
         )
     # Deliberately avoid the network here in the stdlib path. Downstream
     # callers with `pip` available may run `pip index versions deye`; this
@@ -320,7 +320,7 @@ def apply_update(spec: str, *, python: str | None = None,
     Records the pre-update version so `rollback_to()` can restore it.
     """
     if offline or os.environ.get("DEYE_OFFLINE", "").lower() in {"1", "true", "yes"}:
-        return {"ok": False, "reason": "offline mode — update skipped"}
+        return {"ok": False, "reason": "offline mode - update skipped"}
     py = python or sys.executable
     cmd = [py, "-m", "pip", "install", spec]
     if dry_run:
@@ -446,7 +446,7 @@ def repair_guidance() -> list[RepairSuggestion]:
 
 
 # ---------------------------------------------------------------------------
-# Aggregate report — used by `deye lifecycle status` and MCP surface_status
+# Aggregate report - used by `deye lifecycle status` and MCP surface_status
 # ---------------------------------------------------------------------------
 
 def aggregate_report(*, home: Path | None = None) -> dict:

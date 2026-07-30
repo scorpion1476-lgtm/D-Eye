@@ -1,4 +1,4 @@
-# D-Eye — CLI Guide
+# D-Eye - CLI Guide
 
 Every command below assumes an active D-Eye venv:
 
@@ -47,9 +47,9 @@ cd repository/deye
 ## Environment variables
 
 - `DEYE_HOME` (default `~/.deye`)
-- `DEYE_OFFLINE=1` — disable every network egress
-- `DEYE_HTTP_TOKEN` — required by `deye serve-http`
-- `DEYE_BROWSER_PROFILES` — where browser profiles live (owner-only)
+- `DEYE_OFFLINE=1` - disable every network egress
+- `DEYE_HTTP_TOKEN` - required by `deye serve-http`
+- `DEYE_BROWSER_PROFILES` - where browser profiles live (owner-only)
 
 ## Exit codes
 

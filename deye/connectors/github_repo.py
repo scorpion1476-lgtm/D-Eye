@@ -90,7 +90,7 @@ class GitHubRepoConnector:
                 msg = (info.get("message") or "").splitlines()[0]
                 sha = (c.get("sha") or "")[:7]
                 author = ((info.get("author") or {}).get("name")) or "?"
-                commit_lines.append(f"- {sha} {msg} — {author}")
+                commit_lines.append(f"- {sha} {msg} - {author}")
 
         desc = meta.get("description") if isinstance(meta, dict) else None
         stars = meta.get("stargazers_count") if isinstance(meta, dict) else None

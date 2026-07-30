@@ -1,4 +1,4 @@
-# D-Eye — Offline Mode
+# D-Eye - Offline Mode
 
 Set `DEYE_OFFLINE=1` (or export it in your shell profile) and D-Eye
 becomes **zero-network**:
@@ -14,16 +14,16 @@ becomes **zero-network**:
 ## What still works offline
 
 - `deye status`, `deye doctor`, `deye lifecycle env|repair|status|backup`.
-- `deye evidence QUERY` — substring search over local rows.
-- `deye graph` — build entities + claims + contradiction candidates.
-- `deye extract` — pure-function HTML → text.
+- `deye evidence QUERY` - substring search over local rows.
+- `deye graph` - build entities + claims + contradiction candidates.
+- `deye extract` - pure-function HTML → text.
 - The local stdio MCP server and its `capability_list`,
   `connector_health`, `query_evidence`, `extract` tools.
 - The `offline_research` skill: `invoke("offline_research", ...)`.
 
 ## What deliberately does not
 
-- `deye search`, `deye fetch`, `deye research`, `deye repo` — all need
+- `deye search`, `deye fetch`, `deye research`, `deye repo` - all need
   network. They return connector-level errors rather than silently
   succeeding.
 - The remote HTTP MCP server does not start.

@@ -1,10 +1,10 @@
-# D-Eye — MCP Guide
+# D-Eye - MCP Guide
 
 D-Eye ships a stable MCP tool surface across two transports:
 
-- **local stdio** — recommended for Claude Desktop, Claude Code, and
+- **local stdio** - recommended for Claude Desktop, Claude Code, and
   any locally-running MCP client.
-- **remote streamable-HTTP** — for cross-network clients; bearer-auth
+- **remote streamable-HTTP** - for cross-network clients; bearer-auth
   required.
 
 ## Stable tools

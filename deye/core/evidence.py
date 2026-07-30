@@ -24,7 +24,7 @@ from pathlib import Path
 
 from deye.core.provenance import ResearchPacket, content_hash
 
-# Base schema — creates tables + tenant-agnostic indexes only. Tenant-
+# Base schema - creates tables + tenant-agnostic indexes only. Tenant-
 # touching indexes are created AFTER the migration adds the column to any
 # legacy DB (otherwise opening a legacy DB throws "no such column: tenant"
 # at the CREATE INDEX step).
@@ -105,7 +105,7 @@ class EvidenceStore:
                 )
             return packet_id
 
-    # Four pre-built parameterised queries — mirrors the Queue.claim pattern
+    # Four pre-built parameterised queries - mirrors the Queue.claim pattern
     # so bandit's B608 stays clean. Keys are (has_query, scoped_to_tenant).
     _QUERY_SQL = {
         (False, False): (

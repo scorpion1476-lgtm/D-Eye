@@ -1,4 +1,4 @@
-"""D-Eye local semantic research — FOSS-first, stdlib-first.
+"""D-Eye local semantic research - FOSS-first, stdlib-first.
 
 The `research` package provides D-Eye-native primitives for the semantic
 capabilities in Category 5 of the catalogue. External providers (Exa,
@@ -76,7 +76,7 @@ class FTSIndex:
                 with self._cached_conn:
                     self._cached_conn.executescript(FTS_SCHEMA)
             return self._cached_conn
-        # For on-disk indexes, a fresh connection per call is fine — the
+        # For on-disk indexes, a fresh connection per call is fine - the
         # data lives on disk.
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
@@ -312,7 +312,7 @@ def extractive_answer(rows: list[dict], query: str, *,
     lines = [f"Extractive answer for '{query}' (grounded in local evidence)."]
     citations: list[dict] = []
     for i, (url, snip) in enumerate(all_snippets, 1):
-        lines.append(f"[{i}] {snip.strip()}  — <{url}>")
+        lines.append(f"[{i}] {snip.strip()}  - <{url}>")
         citations.append({"index": i, "url": url})
     lines.append("")
     lines.append("This answer is composed of verbatim excerpts. Verify each "

@@ -1,4 +1,4 @@
-"""Reddit read-only connector — public JSON, no API key required.
+"""Reddit read-only connector - public JSON, no API key required.
 
 Uses the ``/.json`` view Reddit exposes on every listing URL. This is a
 public, documented surface intended for read-only clients. We attribute

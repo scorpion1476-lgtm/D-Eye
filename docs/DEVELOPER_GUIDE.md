@@ -1,4 +1,4 @@
-# D-Eye — Developer Guide
+# D-Eye - Developer Guide
 
 ## Project layout
 
@@ -75,7 +75,7 @@ Then:
 4. Document it in `docs/CONNECTOR_GUIDE.md`.
 5. Run `pytest`.
 
-Never call raw `urllib.request` or `requests` — always go through
+Never call raw `urllib.request` or `requests` - always go through
 `deye.connectors.base.safe_get` / `safe_post` so the SSRF + size +
 decompression + redirect-re-eval invariants hold.
 

@@ -1,4 +1,4 @@
-"""YouTube read-only connector — oEmbed metadata + channel RSS, no key required.
+"""YouTube read-only connector - oEmbed metadata + channel RSS, no key required.
 
 Two lawful, keyless surfaces are exposed:
 

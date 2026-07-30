@@ -1,8 +1,8 @@
-# D-Eye — Troubleshooting
+# D-Eye - Troubleshooting
 
 ## Install / setup
 
-**`deye: command not found`** — the package installed but the scripts
+**`deye: command not found`** - the package installed but the scripts
 directory isn't on PATH. Run `./.venv/bin/deye ...` or add your
 Python user-scripts dir to PATH.
 
@@ -10,7 +10,7 @@ Python user-scripts dir to PATH.
 unset it or export the path you want.
 
 **`deye doctor` says a connector is `missing`.** Run
-`deye lifecycle repair` — it prints a deterministic list of
+`deye lifecycle repair` - it prints a deterministic list of
 suggestions (missing extras, non-venv Python, wrong Python version).
 
 **Python too old.** D-Eye requires Python 3.10+. Install via Homebrew,
@@ -47,7 +47,7 @@ Restart Claude Desktop. On macOS, quit fully (Cmd-Q) before restarting.
 
 **MCP subprocess tests hang.** Kill the child
 (`pkill -f deye.mcp_server`) and rerun. If the hang persists,
-`pip install -e '.[mcp]'` — the tests skip cleanly when the extra
+`pip install -e '.[mcp]'` - the tests skip cleanly when the extra
 isn't installed.
 
 ## Browser
@@ -64,7 +64,7 @@ isn't installed.
 **`deye evidence QUERY` returns nothing.**
 - Check the tenant scope: the `evidence` skill defaults to
   `tenant=None` (owner scope, sees everything).
-- The store uses SQL `LIKE` substring — try a partial word.
+- The store uses SQL `LIKE` substring - try a partial word.
 - Confirm a packet was recorded: `deye lifecycle backup --dest /tmp`
   and inspect the resulting archive.
 
@@ -75,7 +75,7 @@ protected from tenant-scoped deletion by design.
 ## Supply chain
 
 **`pip-audit` fails on the editable `deye` install.** Use the wrapper:
-`sh scripts/run_pip_audit.sh` — it excludes the editable install and
+`sh scripts/run_pip_audit.sh` - it excludes the editable install and
 audits the rest against OSV.
 
 **Licence scan reports an "unknown" licence for a new dep.** Add the
