@@ -68,11 +68,13 @@ the product-review checklist and records the state of each item.
 
 - A screenshot of the rendered README could be added to the branding
   audit reports once you capture one in a browser.
-- The `About` panel on GitHub still needs a one-line update: paste
-  "FOSS-first, local-first capability and evidence layer for AI
-  agents. Local MCP, cited research packets, SSRF-hardened fetch."
-  under Settings > About. This is a GitHub UI action that a read-only
-  API token cannot perform.
+- The `About` panel on GitHub was updated on 2026-07-30 to exactly:
+  "D-Eye: a FOSS-first, local-first capability and evidence layer for
+  AI agents. Local MCP, cited research packets, SSRF-hardened fetch."
+  (ASCII-only; zero Unicode dashes). Verified via a read-only
+  GitHub API call to `repos/scorpion1476-lgtm/D-Eye`.
 - The GitHub social preview PNG is available at
   `assets/branding/derivatives/D-Eye_light.png` (159 KB, well below
   the 1 MB cap) and can be uploaded under Settings > Social preview.
+  GitHub does not expose a stable REST endpoint for social-preview
+  upload; this remains a browser-Settings-UI action.
