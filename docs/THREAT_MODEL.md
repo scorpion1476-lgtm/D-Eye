@@ -29,7 +29,7 @@ tenant/project data, and the integrity of retrieved evidence.
 - Connector sandboxing in a separate low-privilege process / container.
 - Signed plugin/skill bundles with hash pinning and rollback registry.
 - SBOM generation, SAST, dependency + container scanning in CI.
-- Browser edge (Playwright / OpenCLI), transcription, tenant isolation at DB level.
+- Optional local browser adapter (opt-in `[browser]` extras), transcription pipelines, per-tenant scoping at the persistence layer (a first pass at multi-tenant scoping in the evidence store shipped this session).
 
 Security is a process: this slice reduces the highest-severity risks first and
 names the rest honestly rather than implying completeness.

@@ -88,12 +88,35 @@ def test_plugin_hook_shim_is_local_and_read_only():
     assert "deye doctor" in shim
 
 
-def test_plugin_skill_declares_untrusted_evidence_contract():
-    skill = (PLUGIN / "skills" / "deye" / "SKILL.md").read_text().lower()
-    assert "untrusted" in skill
-    # skill points to the local MCP tools
-    for tool in ("search", "fetch", "export_research_packet"):
-        assert tool in skill
+def test_plugin_ships_all_eight_named_skills():
+    """The plugin exposes the 8 specialised D-Eye skills, each with a
+    SKILL.md that declares the untrusted-evidence contract and versions."""
+    expected = {"research", "evidence", "web_discovery", "browser_research",
+                "repository_research", "source_quality",
+                "offline_research", "connector_builder"}
+    actual = {p.name for p in (PLUGIN / "skills").iterdir() if p.is_dir()}
+    assert expected <= actual, f"missing skills: {expected - actual}"
+    # Every skill declares the untrusted-evidence contract or is
+    # explicitly consent-gated / offline / scaffold-only.
+    for name in expected:
+        text = (PLUGIN / "skills" / name / "SKILL.md").read_text().lower()
+        # frontmatter present
+        assert text.startswith("---")
+        assert f"name: {name}" in text
+        assert "version:" in text
+        # at least one of the safety framings
+        assert any(term in text for term in (
+            "untrusted", "consent", "read-only", "no network", "scaffold",
+            "safety",
+        )), f"{name}: SKILL.md missing a safety framing"
+
+
+def test_plugin_research_skill_names_local_mcp_tools():
+    """Research skill (the primary user-facing entry point) explicitly
+    names the local MCP tool the client should call."""
+    text = (PLUGIN / "skills" / "research" / "SKILL.md").read_text().lower()
+    assert "export_research_packet" in text
+    assert "untrusted" in text
 
 
 def test_plugin_marketplace_metadata():
@@ -107,9 +130,28 @@ def test_plugin_marketplace_metadata():
             "no_silent_telemetry", "cookies_stay_local"} <= flags
 
 
-def test_plugin_readme_documents_deltas_from_reference():
+def test_plugin_readme_declares_safety_properties():
+    """The plugin README asserts its safety properties in plain language
+    that a security reviewer can grep for."""
     text = (PLUGIN / "README.md").read_text().lower()
-    # Explicit callout that reference-plugin behaviours were removed.
-    assert "hard-coded bearer" in text or "no hard-coded" in text
-    assert "session" in text  # session-start behaviour discussed
-    assert "telemetry" in text
+    # Every safety property that the plugin manifest declares must appear
+    # in the README as a testable claim.
+    for claim in (
+        "read-only",
+        "consent",
+        "no remote skill downloading",
+        "no silent telemetry",
+        "no hard-coded bearer",
+        "cookies never uploaded",
+    ):
+        assert claim in text, f"plugin README missing claim: {claim!r}"
+
+
+def test_plugin_readme_does_not_name_external_reference_products():
+    """No external product name may appear in the user-facing plugin
+    README. Attribution belongs in NOTICE / THIRD_PARTY_NOTICES.md."""
+    text = (PLUGIN / "README.md").read_text().lower()
+    for forbidden in ("agent-reach", "opencli", "firebase", "genkit"):
+        assert forbidden not in text, (
+            f"plugin README names forbidden product: {forbidden!r}"
+        )

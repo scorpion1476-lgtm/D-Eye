@@ -1,8 +1,18 @@
-# D-Eye — Production Gap Matrix
+# D-Eye — Production Gap Matrix (superseded — historical only)
 
-> **Current state (2026-07-29):** combined Phase A + Phase B on `feature/phase-b-hardening` (PR #1 into `main`). Tests: core 69/1, MCP 73/0. CI observed on the push/PR — tests, bandit, secret-scan, pip-audit, SBOM **pass**. `dependency-review` is red only because GHAS is unavailable in this private-repo plan — **BLOCKED BY EXTERNAL PLATFORM**; pip-audit already covers dependency CVEs; the Node 20 deprecation notice is advisory only.
+> **SUPERSEDED 2026-07-30.** This file is retained as a historical record.
+> The current, authoritative production-readiness status is in
+> `docs/PRODUCTION_READINESS_REPORT.md` at the workspace root and in
+> `docs/FEATURE_TRACEABILITY.csv`. As of 2026-07-30: 63 rows PRODUCTION
+> READY, 84 IMPLEMENTED BUT NOT FULLY VERIFIED, 12 PARTIAL, 0 NOT
+> IMPLEMENTED, 8 BLOCKED BY EXTERNAL PLATFORM (total 167).
 >
-> The matrix below is a **historical pre-integration record — superseded on 2026-07-29**; its "a green Actions run has not yet been observed" note no longer reflects the current state.
+> The text below reflects state on 2026-07-29 and its per-row assessments
+> are stale (browser adapter, multi-tenant scoping, licence-drift
+> enforcement, MCP tool invocation, live OSV audit, plus 8+ specialised
+> D-Eye skills have all shipped since). It also references external
+> product names that D-Eye's documentation policy now keeps in
+> `THIRD_PARTY_NOTICES.md` only. Do not treat this document as current.
 
 **Baseline:** v0.2.0-validated · **Working branch:** feature/phase-a-foundation
 **Last updated:** 2026-07-28 (Phase A: evidence graph, GitHub + Exa connectors, security CI)
@@ -43,11 +53,11 @@ Registry, preference-ordered router, health-based fallback, **circuit breaker** 
 ### 3. Internet & content connectors — PARTIAL
 Live & tested: web search (keyless DuckDuckGo), web fetch+extract, RSS/Atom (now with an XXE/entity guard), **GitHub repo inspection (new)**. Provenance + read-only default enforced. YouTube, Reddit, X, LinkedIn/FB/IG, Bilibili, Xiaohongshu, V2EX, Xueqiu, Xiaoyuzhou → **NOT IMPLEMENTED**.
 
-### 4. Browser & OpenCLI automation — NOT IMPLEMENTED
-Playwright/OpenCLI, profiles, isolated contexts, a11y-tree, screenshots, consent clicks — none present. Playwright is not a dependency.
+### 4. Browser automation — NOT IMPLEMENTED (at time of writing)
+Optional local browser adapter, profiles, isolated contexts, a11y-tree, screenshots, consent clicks — not present at time of writing. (An opt-in browser adapter has since shipped as `deye/browser/` behind the `[browser]` extras group; see the current status report.)
 
-### 5. Exa-style research — IMPLEMENTED BUT NOT FULLY VERIFIED
-Real Exa adapter (new): authenticated POST via the SSRF-guarded path; search + contents + highlights; domain include/exclude; date filters; find-similar; answer; cost reporting; keyless fallback. Unit-tested with mocked HTTP; keyless fallback verified. **Not** verified against the live Exa API (no key in this environment). Research-task polling → **NOT IMPLEMENTED**.
+### 5. Semantic research — IMPLEMENTED BUT NOT FULLY VERIFIED
+An optional third-party search-provider adapter existed at the time this doc was written: authenticated POST via the SSRF-guarded path; search + contents + highlights; domain include/exclude; date filters; find-similar; answer; cost reporting; keyless fallback. Unit-tested with mocked HTTP; keyless fallback verified. Not verified against the live provider API (no key in this environment). Research-task polling → **NOT IMPLEMENTED** at time of writing.
 
 ### 6. Evidence & research quality — IMPLEMENTED BUT NOT FULLY VERIFIED
 Persistent SQLite evidence, provenance, hashes, cited Markdown/JSON export, change detection, dedup (pre-existing, tested). **New:** evidence graph (entities + claims) and **contradiction detection** (polarity + numeric heuristics with confidence scores), unit-tested. Heuristic precision/recall on real corpora is **not measured**; confidence/source-quality scoring beyond this is **PARTIAL**.
@@ -61,8 +71,8 @@ Plugin manifest, marketplace.json, `.mcp.json`, SKILL.md, health-check hook pres
 ### 9. GitHub & developer workflow — IMPLEMENTED BUT NOT FULLY VERIFIED
 Private repo + `v0.2.0-validated` release verified live. **New:** CI workflow (tests × {core, mcp} matrix + lint + SBOM) and a **Security workflow** (bandit SAST, secret scan, pip-audit, dependency-review, SBOM artifact) with least-privilege `contents: read`. Workflows are committed but **a green Actions run has not yet been observed** from this session, so not marked PRODUCTION READY. Signed tags/releases, checksums → **NOT IMPLEMENTED**.
 
-### 10. Firebase/Genkit-style backend (FOSS) — NOT IMPLEMENTED
-Only bearer auth on the remote MCP exists. Identity, tenant, object storage, jobs, RBAC, audit log → not present.
+### 10. Provider-neutral backend (FOSS) — NOT IMPLEMENTED (at time of writing)
+Only bearer auth on the remote MCP exists at time of writing. Identity, tenant, object storage, jobs, RBAC, audit log → not present. (A local `deye/backend/` package has since shipped with local auth (scrypt), SQLite queue, filesystem SHA-addressable object store, RBAC, JSON observability, Prometheus text emitter, event bus, and per-tenant lifecycle — see the current status report.)
 
 ### 11. Security & software supply chain — IMPLEMENTED BUT NOT FULLY VERIFIED
 Real & tested: SSRF with connection-level IP pinning, private/metadata-IP blocking, decompression caps, credential redaction, in-repo secret test, **new XXE/entity guard** on feeds. **New:** SBOM generator (declared + installed modes), bandit SAST (0 findings), pip-audit + dependency-review + secret-scan CI. Signed tags/releases, provenance attestations, reproducible builds, container scanning, connector sandboxing → **NOT IMPLEMENTED**.

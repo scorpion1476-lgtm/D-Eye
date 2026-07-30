@@ -1,7 +1,16 @@
-# D-Eye second-pass forensic audit & remediation report
+# D-Eye — design-provenance attribution record
 
-_Independent re-audit of `D-Eye-0.1.0.zip` against all five reference
-attachments, with corrections applied and verified. Produced 2026-07-27._
+> **Type:** design-provenance / attribution record. This file exists to
+> preserve the honest record of which external projects informed D-Eye's
+> design and to satisfy each project's licence attribution obligations.
+> It is NOT product documentation. External project names here are
+> intentional attribution (permitted under the docs policy in the same
+> way `THIRD_PARTY_NOTICES.md` is permitted); D-Eye's user-facing docs
+> (README, guides, CLI/plugin descriptions) use neutral D-Eye terminology
+> only.
+>
+> _Independent re-audit produced 2026-07-27; retained verbatim as a
+> historical attribution record._
 
 ## 1. Source & licence reconciliation
 
