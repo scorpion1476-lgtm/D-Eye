@@ -17,7 +17,7 @@ a persistent evidence store. Security decisions run deterministically
 **outside the model**; retrieved content is treated as **untrusted evidence**,
 never as instructions.
 
-> **Verified in this environment (2026-07-30).** 239 tests pass, 8 skipped
+> **Verified in this environment (2026-07-30).** 252 tests pass, 8 skipped
 > (live-network tests that need direct DNS the sandbox does not provide;
 > the same tests are written to run and pass on any normal developer host).
 > Bandit static analysis: 0 HIGH / 0 MEDIUM / 8 LOW (informational
@@ -458,7 +458,7 @@ every workbook or CSV update:
 - **BLOCKED BY EXTERNAL PLATFORM:** each with a specific reason in
   [`reports/REMAINING_EXTERNAL_BLOCKERS.md`](reports/REMAINING_EXTERNAL_BLOCKERS.md).
 
-Test totals verified in this environment: **239 passed / 0 failed / 8
+Test totals verified in this environment: **252 passed / 0 failed / 8
 skipped** (the 8 skips are live-network tests that need direct DNS
 this sandbox does not provide; identical tests pass on network-
 permissive hosts). Bandit: 0 HIGH / 0 MEDIUM / 8 LOW (informational
