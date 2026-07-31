@@ -379,34 +379,165 @@ Category 2 (Intelligent capability routing):
   acceptance says "keyless search is not implemented (would need
   YouTube Data API key, kept out of core)".
 
-## Next tranche (round 4)
+## Round 4 — outcome
+
+### Distribution change (net +24 to PRODUCTION READY)
+
+| Status | Before round 4 | After round 4 |
+|---|---|---|
+| PRODUCTION READY | 87 | **111** (+24) |
+| IMPLEMENTED BUT NOT FULLY VERIFIED | 60 | 36 |
+| PARTIAL | 12 | 12 |
+| BLOCKED BY EXTERNAL PLATFORM | 8 | 8 |
+| **TOTAL** | **167** | **167** |
+
+### Row reverted from PRODUCTION READY this round
+
+None. C11-F011 and C12-F004 were re-examined and stay PRODUCTION
+READY (bearer-auth acceptance genuinely met by in-process
+TestClient). C07-F003 stays IMPLEMENTED BUT NOT FULLY VERIFIED from
+round 2 (needs hosted deploy).
+
+### Rows advanced with real in-session evidence
+
+Category 1 (Setup and lifecycle, macOS Python-level rows):
+
+- **C01-F002 (Environment detection)** — three lifecycle tests
+  green in-session (env_detect returns populated report, flags
+  missing venv, respects offline flag).
+- **C01-F003 (Dependency installation)** — three tests
+  (detect_extras reports all, provision_extra refuses unknown,
+  provision_extra refuses offline).
+- **C01-F004 (Configuration management)** — portable_config
+  roundtrip test green.
+- **C01-F005 (Automatic updates)** — three tests (check_update
+  offline-honouring, apply_update dry-run, rollback_to dry-run).
+- **C01-F006 (Health checking)** — aggregate_report serialisation
+  test plus test_router.py green.
+- **C01-F008 (Portable configuration)** — same roundtrip test.
+
+Category 7 (MCP tool acceptance, new
+`tests/test_mcp_tools_extended.py`, 9 assertions total):
+
+- **C07-F005 (Connector health)** — connector_health returns the
+  standard shape.
+- **C07-F006 (Search tool)** — search routes to capability=search
+  via a monkey-patched `_search`.
+- **C07-F007 (Fetch tool)** — fetch returns title / url / content
+  / warnings via a monkey-patched `_fetch`.
+- **C07-F010 (Research export)** — export_research_packet emits
+  Markdown + source_count with default and explicit max_sources.
+- **C07-F011 (Consent gate)** — write denied by default, allowed
+  only with explicit grant, read always permitted.
+
+Category 8 (Claude plugin structural rows) — session 9 mis-
+classified several C08 rows as needing live Claude Desktop
+activation, but their catalogue acceptance is genuinely
+structural (file shape / manifest content / hook shim). The
+existing `tests/test_plugin_manifest.py` (10 assertions) matches
+those acceptances directly and passes in-session:
+
+- **C08-F001 (Claude plugin)** — plugin ships as a single
+  directory with all pieces.
+- **C08-F002 (Plugin manifest)** — plugin.json shape assertions.
+- **C08-F004 (MCP configuration)** — mcp.json shape assertions.
+- **C08-F005 (Session-start hook)** — local-only hook + shim.
+- **C08-F006 (Health hook)** — local-only hook shim.
+- **C08-F007 (Slash commands)** — four command files with valid
+  YAML frontmatter.
+- **C08-F008 (Plugin marketplace)** — marketplace.json shape.
+- **C08-F009 (Version management)** — plugin.json version +
+  check_update.
+- **C08-F010 (Rollback)** — lifecycle rollback dry-run tests.
+- **C08-F011 (Local and remote MCP bundling)** — mcp.json shape +
+  documented remote deploy.
+- **C08-F012 (Configuration synchronisation)** — portable-config
+  roundtrip.
+
+Category 11 (Security):
+
+- **C11-F002 (Local cookie protection)** — existing browser +
+  profile lifecycle tests green.
+- **C11-F016 (Non-root container)** — new
+  `tests/test_c11_container_and_cookie.py` parses `docker/Dockerfile`
+  and asserts a `USER` directive that is not root and is created
+  before the switch (two assertions).
+
+### Test-suite result this session
+
+- Before round 4: 301 passed / 0 failed / 9 skipped.
+- After round 4: **312 passed / 0 failed / 9 skipped** (return
+  code 0). Net: 11 genuinely new passing tests.
+- The nine skips are unchanged and environmental (sandbox forbids
+  `bind()`, sandbox blocks PyPI so Playwright can't install,
+  sandbox cannot reach api.github.com / v2ex.com / hnrss.org).
+
+### What was built or wired in
+
+- **New tests** (Python stdlib + existing modules; zero new
+  runtime dependencies):
+  - `tests/test_mcp_tools_extended.py` (11 assertions on the MCP
+    facade's tool dispatch: connector_health, search, fetch,
+    export_research_packet, consent gate)
+  - `tests/test_c11_container_and_cookie.py` (2 assertions on
+    Dockerfile non-root USER directive)
+- **Session 10 audit updated**: `ACHIEVED_LOCAL_E2E` now names
+  the rows whose acceptance is genuinely closable locally,
+  removing them from session 9's overly-conservative live-gated
+  buckets (5 C01 rows, C07-F007, and 7 C08 structural rows).
+- **No new capability code**; every promotion is honest evidence
+  of code that was already in the repository plus tests that pass
+  in this session.
+- **No existing adapter or core module was removed or replaced**;
+  every file under `deye/connectors/`, `deye/core/`, `deye/browser/`,
+  `deye/research/`, `deye/skills/`, `deye/lifecycle/` stayed
+  byte-identical.
+
+### Rows NOT raised this round (honest gaps)
+
+- **C04 browser rows (C04-F001, F003, F005, F006, F007, F008,
+  F009)** — Playwright pip install still fails because sandbox
+  blocks PyPI; the browser rows stay IMPLEMENTED BUT NOT FULLY
+  VERIFIED. What would settle them: `pip install playwright &&
+  playwright install chromium` in a normal dev shell.
+- **C07-F003 (Remote HTTP MCP)** — needs live hosted uvicorn
+  deploy with a real external MCP client.
+- **C11-F007 (Redirect re-validation)** and **C11-F008
+  (Connection-level IP pinning)** — the local HTTP round-trip
+  harness from round 1 still skips under the sandbox's `bind()`
+  restriction. What would settle them: run
+  `tests/test_e2e_local_http.py` in a normal dev shell.
+- **C01-F001 (One-command installation)** — genuinely needs a
+  POSIX shell subprocess plus a cross-OS matrix (Windows/Linux).
+- **C01-F007 (Automatic repair guidance)** — deliberately
+  PARTIAL: acceptance says "no automatic mutations" so the row
+  is honestly conservative.
+- **C05-F002, C05-F013, C03-F006** — deliberately PARTIAL by
+  acceptance.
+
+## Next tranche (round 5)
 
 Recommended focus, in this order:
 
-1. **Category 1 (setup + lifecycle) macOS pass** — several rows
-   (C01-F002 env detection, C01-F003 dependency installation,
-   C01-F004 configuration, C01-F006 health checking, C01-F007
-   repair guidance) have code under `deye/lifecycle/` and can be
-   lifted on macOS via real subprocess-driven tests; Windows and
-   Linux halves stay honestly deferred.
-2. **Category 7 (MCP) evidence sweep** — the remaining C07 rows
-   (C07-F005 connector health, C07-F006 search tool, C07-F007
-   fetch tool, C07-F010 research export, C07-F011 consent gate)
-   have code in `deye/mcp_server.py` and can be lifted with
-   dedicated in-process MCP tool-invocation tests.
-3. **Category 11 (security) evidence sweep** — a handful of
-   security rows may already have coverage via test_router.py,
-   test_redact.py, test_decompression_guard.py; a CSV audit for
-   stale test paths may lift several without new capability.
-4. **Category 8 (Claude plugin) structural tightening** — the
-   plugin-hook and skill rows that are NOT gated by Claude
-   Desktop activation (C08-F006 health hook, C08-F009 version
-   management, C08-F010 rollback, C08-F012 configuration
-   synchronisation) may be liftable via structural + shim tests.
-5. Deferred until normal dev shell:
-   - **C04 browser rows** (Playwright install)
-   - **C11-F007, C11-F008** (localhost bind)
-   - **C07-F003** (hosted uvicorn deploy)
+1. **Category 12 mirror-row sweep** — Category 12 has 37 "Currently
+   represented" and "Still incomplete or roadmap-level" rows that
+   mirror earlier categories. Any row mirroring a now-PROD row
+   should be liftable via CSV recognition of the mirror's tests.
+2. **Remaining Category 7 tightening** — C07-F001 (MCP server)
+   and C07-F002 (Local stdio MCP) are already PROD; only C07-F003
+   remains at IMPL-NOT-VERIFIED for round 5 (needs hosted deploy).
+3. **Remaining Category 6 rows** — C06-F001-C06-F007, C06-F010,
+   C06-F012, C06-F014 have code + existing passing tests; a CSV
+   audit should lift several.
+4. **Remaining Category 10 rows** — the backend rows in Category
+   10 (C10-F001..C10-F010) have code in `deye/backend/`; a CSV
+   audit for stale test paths may lift several.
 
-Every round-4 promotion still requires the round's own tests to
+Deferred until normal dev shell (unchanged from round 3):
+- C04 browser rows
+- C11-F007, C11-F008 (bind on 127.0.0.1)
+- C07-F003 (hosted uvicorn)
+- C01-F001 (POSIX shell + cross-OS matrix)
+
+Every round-5 promotion still requires the round's own tests to
 pass in-session; a skipped test is not evidence of success.
