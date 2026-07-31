@@ -254,37 +254,159 @@ existed; provisional status raised to reflect that:
 - **C07-F003 (Remote HTTP MCP)** — needs live hosted uvicorn +
   external client, per the revert above.
 
-## Next tranche (round 3)
+## Round 3 — outcome
+
+### Distribution change (net +16 to PRODUCTION READY)
+
+| Status | Before round 3 | After round 3 |
+|---|---|---|
+| PRODUCTION READY | 71 | **87** (+16) |
+| IMPLEMENTED BUT NOT FULLY VERIFIED | 76 | 60 |
+| PARTIAL | 12 | 12 |
+| BLOCKED BY EXTERNAL PLATFORM | 8 | 8 |
+| **TOTAL** | **167** | **167** |
+
+### Row reverted from PRODUCTION READY this round
+
+None. C11-F011 and C12-F004 were re-examined per the strict rule
+and stay PRODUCTION READY because their acceptance (bearer required,
+401 without) is genuinely met by the in-process TestClient. C07-F003
+was already reverted in round 2 and stays IMPLEMENTED BUT NOT FULLY
+VERIFIED because its acceptance requires a hosted server.
+
+### Rows advanced with real in-session evidence
+
+Category 3 (Internet and content access):
+
+1. **C03-F001 (General web search)** — new
+   `tests/test_web_search_offline.py` drives `DuckDuckGoSearch.run`
+   through a monkey-patched `safe_get` with a fake DDG HTML
+   fixture, asserting title extraction, `//duckduckgo.com/l/?uddg=`
+   unwrapping, empty-result path, and keyless-vs-paid manifest
+   preference (4 assertions).
+2. **C03-F002 (Webpage reading)** — new
+   `tests/test_web_fetch_offline.py` covers envelope shape +
+   trust=untrusted, policy-refusal propagation, and keyless
+   manifest (3 assertions).
+3. **C03-F003 (RSS and Atom feeds)** — existing
+   `tests/test_rss_guard.py` covers DOCTYPE rejection, normal-feed
+   parsing, hidden-DOCTYPE guard, and CDATA false-positive
+   avoidance (4 assertions).
+4. **C03-F005 (Reddit search)** — existing four Reddit tests in
+   `tests/test_new_connectors.py`.
+5. **C03-F007 (GitHub search)** — existing four tests in
+   `tests/test_github_connector.py`.
+6. **C03-F012 (V2EX)** — existing five V2EX tests.
+7. **C03-F013 (Xueqiu)** — existing three Xueqiu tests.
+8. **C03-F014 (Xiaoyuzhou)** — existing two Xiaoyuzhou tests.
+9. **C03-F015 (Social and community research)** — existing two
+   multi_source tests.
+10. **C03-F016 (Source provenance and lawful access controls)** —
+    new `tests/test_source_provenance_c3f16.py` covers envelope
+    provenance (URL, connector, retrieved_at, content-hash-based
+    evidence locator), hash reproducibility, four policy-refusal
+    cases (loopback, metadata, non-http scheme, userinfo), verbatim
+    reason propagation, and each social-platform stub carrying a
+    reason (8 assertions).
+
+Category 5 (Intelligent semantic research):
+
+11. **C05-F001 (Semantic search)** — existing
+    `test_fast_and_deep_search_return_relevant_rows` plus
+    `test_extractive_answer_grounded_with_citations`.
+12. **C05-F004 (Deep search)** — same test also exercises the deep
+    path's 4x recall + phrase-boost.
+13. **C05-F007 (Page contents)** — existing
+    `test_strips_script_and_tags` on `extract.py`.
+14. **C05-F010 (Research workflow)** — existing ten offline-E2E
+    assertions in `tests/test_offline_e2e.py`.
+
+Category 2 (Intelligent capability routing):
+
+15. **C02-F004 (Automatic backend replacement)** — new
+    `tests/test_router_backend_replacement.py::TestC02F004AutomaticBackendReplacement`
+    covers new-manifest replacement, unhealthy-fallback replacement,
+    and after-construction capability addition (3 assertions).
+16. **C02-F007 (Cross-agent compatibility)** — new
+    `tests/test_router_backend_replacement.py::TestC02F007CrossAgentCompatibility`
+    covers import-shape shared, class instances shared, and same
+    envelope returned from any surface via the same Router
+    (3 assertions).
+
+### Test-suite result this session
+
+- Before round 3: 280 passed / 0 failed / 9 skipped.
+- After round 3: **301 passed / 0 failed / 9 skipped** (return
+  code 0). Net: 21 genuinely new passing tests.
+- The nine skips are unchanged from round 2 and are all
+  environmental (sandbox forbids `bind()`, sandbox blocks PyPI so
+  Playwright can't install, sandbox cannot reach api.github.com /
+  v2ex.com / hnrss.org).
+
+### What was built or wired in
+
+- **New tests** (all Python stdlib + existing modules; zero new
+  runtime dependencies):
+  - `tests/test_web_search_offline.py` (4 assertions on the DDG
+    parser with an offline HTML fixture)
+  - `tests/test_web_fetch_offline.py` (3 assertions on
+    `WebFetchConnector`)
+  - `tests/test_router_backend_replacement.py` (6 assertions on
+    Registry + Router replacement and cross-surface parity)
+  - `tests/test_source_provenance_c3f16.py` (8 assertions on
+    envelope provenance + lawful-access policy refusals)
+- **No new capability code**; every promotion is honest evidence
+  of code that was already in the repository.
+- **No existing adapter or core module was removed or replaced**;
+  every file under `deye/connectors/`, `deye/core/`, `deye/browser/`,
+  `deye/research/`, `deye/skills/` stayed byte-identical.
+
+### Rows NOT raised this round (honest gaps)
+
+- **C04 browser rows** — Playwright pip install still fails because
+  the sandbox blocks PyPI; deferred.
+- **C08-F004, F005, F007** — need a real Claude Desktop or `claude
+  plugin` CLI to load the plugin.
+- **C07-F003** — needs live hosted uvicorn deploy + external client.
+- **C11-F007, C11-F008** — need a normal shell where `bind()` on
+  127.0.0.1 is permitted.
+- **C05-F002 (Neural search)** — deliberately PARTIAL: acceptance
+  documents "embedding path documented but not required" so PARTIAL
+  is the honest state.
+- **C05-F013 (Cost/quota/rate reporting)** — deliberately PARTIAL:
+  acceptance calls out that FOSS connectors have no external cost.
+- **C03-F006 (YouTube transcripts)** — deliberately PARTIAL:
+  acceptance says "keyless search is not implemented (would need
+  YouTube Data API key, kept out of core)".
+
+## Next tranche (round 4)
 
 Recommended focus, in this order:
 
-1. **Category 5 (semantic research) evidence pass** — several rows
-   (C05-F001 semantic search, C05-F004 deep search, C05-F007 page
-   contents, C05-F010 research workflow) have real code in
-   `deye/research/` and passing tests in
-   `tests/test_quality_and_research.py`. A CSV audit for stale test
-   paths + a couple of missing acceptance tests should lift 3-4
-   rows. Zero new capability required.
-2. **Category 3 keyless connectors** — connectors that ship keyless
-   FOSS defaults (C03-F001 web search via DuckDuckGo HTML, C03-F002
-   webpage reading, C03-F003 RSS/Atom, C03-F005 Reddit public JSON,
-   C03-F007 GitHub public REST, C03-F012 V2EX, C03-F013 Xueqiu,
-   C03-F014 Xiaoyuzhou, C03-F015 social+community, C03-F016 source
-   provenance) all have code + connector-shape tests. Adding a
-   deterministic offline-fixture test per connector (feed the raw
-   HTML/JSON into the connector's parser and assert the envelope
-   shape) can lift several rows without needing a live network.
-3. **Category 2 (routing) parity finalisation** — C02-F004
-   automatic backend replacement and C02-F007 cross-agent
-   compatibility both have router code; adding real fallback
-   tests over a fake connector cluster lifts both.
-4. **Category 1 (setup + lifecycle) macOS pass** — several rows
+1. **Category 1 (setup + lifecycle) macOS pass** — several rows
    (C01-F002 env detection, C01-F003 dependency installation,
    C01-F004 configuration, C01-F006 health checking, C01-F007
-   repair guidance) have code in `deye/lifecycle/` and can be
-   lifted on the macOS half with real subprocess-driven tests.
-   The Windows and Linux halves stay honestly deferred.
+   repair guidance) have code under `deye/lifecycle/` and can be
+   lifted on macOS via real subprocess-driven tests; Windows and
+   Linux halves stay honestly deferred.
+2. **Category 7 (MCP) evidence sweep** — the remaining C07 rows
+   (C07-F005 connector health, C07-F006 search tool, C07-F007
+   fetch tool, C07-F010 research export, C07-F011 consent gate)
+   have code in `deye/mcp_server.py` and can be lifted with
+   dedicated in-process MCP tool-invocation tests.
+3. **Category 11 (security) evidence sweep** — a handful of
+   security rows may already have coverage via test_router.py,
+   test_redact.py, test_decompression_guard.py; a CSV audit for
+   stale test paths may lift several without new capability.
+4. **Category 8 (Claude plugin) structural tightening** — the
+   plugin-hook and skill rows that are NOT gated by Claude
+   Desktop activation (C08-F006 health hook, C08-F009 version
+   management, C08-F010 rollback, C08-F012 configuration
+   synchronisation) may be liftable via structural + shim tests.
+5. Deferred until normal dev shell:
+   - **C04 browser rows** (Playwright install)
+   - **C11-F007, C11-F008** (localhost bind)
+   - **C07-F003** (hosted uvicorn deploy)
 
-Round-3 tests must actually pass in this sandbox for a promotion
-to stand. Playwright and localhost-bind work stay deferred until a
-normal dev shell.
+Every round-4 promotion still requires the round's own tests to
+pass in-session; a skipped test is not evidence of success.
