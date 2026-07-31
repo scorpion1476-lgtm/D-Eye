@@ -81,7 +81,7 @@ def test_click_allowed_when_consent_grants_but_still_reports_unavailable():
     """Consent gate passes; but Playwright absent, so the operation still
     reports ok=False with the availability reason (not the consent reason)."""
     if browser.is_available():
-        pytest.skip("playwright installed — different code path")
+        pytest.skip("playwright installed; different code path")
     consent = ConsentPolicy(allow_write=True,
                             granted_actions={"browser.click"})
     with BrowserAdapter(consent=consent) as a:
