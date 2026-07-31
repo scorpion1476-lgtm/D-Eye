@@ -194,6 +194,6 @@ def test_live_rss_reads_real_atom_feed():
     assert env.source.connector == "rss"
     # Feed has some entries
     assert env.content
-    art = next((a for a in env.artifacts if a["type"] == "rss_feed"), None)
+    art = next((a for a in env.artifacts if a["type"] == "feed_items"), None)
     assert art is not None
     assert isinstance(art.get("entries", []), list)
