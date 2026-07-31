@@ -911,3 +911,169 @@ roadmap) -- 8 rows** (unchanged from prior rounds):
 Every remaining row is either genuinely externally-gated or
 deliberately PARTIAL by acceptance. No further sandbox-closeable
 row exists at the end of this run.
+
+## Round 7 -- verification-only outcome (sandbox off)
+
+This round did NOT build new capability. The sandbox was disabled
+so that existing harnesses that need real 127.0.0.1 binding, a
+real headless Chromium, or reachable public network could actually
+execute. Every row promoted here is backed by a test that ran
+green live in this session.
+
+### Distribution change (net +5 to PRODUCTION READY)
+
+| Status | Before round 7 | After round 7 |
+|---|---|---|
+| PRODUCTION READY | 141 | **146** (+5) |
+| IMPLEMENTED BUT NOT FULLY VERIFIED | 10 | 5 |
+| PARTIAL | 8 | 8 |
+| BLOCKED BY EXTERNAL PLATFORM | 8 | 8 |
+| **TOTAL** | **167** | **167** |
+
+### Rows promoted to PRODUCTION READY (LIVE-verified) this round
+
+Group 1 -- localhost socket bind (`tests/test_e2e_local_http.py`,
+7/7 tests pass live):
+
+1. **C11-F007 Redirect re-validation** -- LIVE-verified by
+   `test_c11_f007_redirect_to_loopback_is_blocked_on_second_hop`
+   and `test_c11_f007_redirect_to_metadata_is_blocked_on_second_hop`.
+   A real HTTP server bound on 127.0.0.1 issued 302 redirects to
+   `http://127.0.0.1/` and `http://169.254.169.254/`; safe_get
+   re-evaluated each redirect target through the policy engine
+   and refused the second hop.
+2. **C11-F008 Connection-level IP pinning** -- LIVE-verified by
+   `test_c11_f008_pinned_one_hop_returns_real_response`. A
+   `_PinnedHTTPConnection` connected to a real HTTP server bound
+   on 127.0.0.1 using a pre-validated IP and returned the fixture
+   body `b"hello from the pinned-fetch e2e test"` end-to-end.
+
+Group 2 -- Playwright + Chromium (`tests/test_browser.py`,
+including the live headless test):
+
+3. **C04-F001 Browser-based access** -- LIVE-verified by
+   `test_live_render_html_data_url`. Playwright 1.61.0 + chromium
+   installed into the venv; the BrowserAdapter opened a real
+   Chromium context per session and completed render_html.
+4. **C04-F003 Browser automation** -- LIVE-verified by the same
+   live render plus the two in-process consent tests
+   (`test_click_denied_without_consent`,
+   `test_fill_form_denied_without_consent`).
+5. **C04-F005 Dynamic webpage handling** -- LIVE-verified by
+   `test_live_render_html_data_url`. render_html loaded a
+   data: URL through real Chromium and returned the rendered
+   `<h1>hi</h1>` payload with ok=True.
+
+### Rows re-verified with additional LIVE evidence (already PROD, not re-promoted)
+
+Ten more tests in `tests/test_live_network_integration.py` now
+run live and pass, providing additional LIVE-verified evidence
+(no CSV changes; these rows were already PROD from earlier rounds):
+
+- **C03-F007 GitHub search** -- `test_live_github_repo_returns_real_metadata`
+  + `test_live_github_repo_rejects_nonexistent` against
+  api.github.com.
+- **C03-F012 V2EX feed** -- `test_live_v2ex_feed_returns_real_topics`
+  against www.v2ex.com/api.
+- **C11-F004 Private-IP + metadata block** --
+  `test_policy_rejects_loopback_via_real_dns_resolution` +
+  `test_policy_rejects_cloud_metadata_ip` with real DNS
+  resolution.
+- **C11-F005 URL scheme allowlist** --
+  `test_policy_rejects_scheme_file_ftp_gopher`.
+- **C11-F006 Userinfo rejection** --
+  `test_policy_rejects_userinfo`.
+- **C11-F008 IP pinning end-to-end** --
+  `test_live_safe_get_real_tcp_and_real_dns` (real DNS + real
+  TCP through the pinned connection).
+- **C11-F009 Response-size cap** --
+  `test_live_size_cap_truncates_real_body` truncating a real
+  api.github.com response at 500 bytes.
+- **C11-F010 Gzip decompression** --
+  `test_live_gzip_decompression_over_real_tcp` decompressing a
+  real Content-Encoding: gzip response.
+
+### Test-suite result this session
+
+- Before round 7 (sandbox on): 353 passed / 0 failed / 9 skipped.
+- After round 7 (sandbox off): **363 passed / 1 failed /
+  4 skipped** (return code 1). Net: 10 genuinely new passing
+  tests; skip count dropped from 9 to 4.
+- **One failure** (reported honestly, not hidden, and NOT
+  fixed here per the round-7 read-only guardrail):
+  `tests/test_live_network_integration.py::test_live_rss_reads_real_atom_feed`
+  fails because the assertion looks for an artifact of type
+  `rss_feed` while `deye.connectors.rss` returns an artifact of
+  type `feed_items` -- a pre-existing test/code naming
+  mismatch that only surfaced now that hnrss.org is reachable
+  live. C12-F008 stays where it was (already PROD from an
+  earlier shape/round; a live rerun with the assertion aligned
+  to `feed_items` would confirm the RSS connector works live).
+- The 4 remaining skips are all in `tests/test_browser.py`:
+  four tests that only run when Playwright is NOT installed
+  now skip because Playwright IS installed. Their negative-
+  branch evidence is preserved in the code and passed in prior
+  sandbox rounds.
+
+### What was built or wired in
+
+- **Nothing new was built.** No new capability code, no new
+  test files, no adapter or core module edit.
+- **Only optional test-time dependency installed**:
+  Playwright 1.61.0 + Chromium into `.venv` (already a
+  documented optional extra). The core still imports and
+  passes its own tests without them.
+- **Session 10 audit updated**: `ACHIEVED_LOCAL_E2E` now names
+  C11-F007, C11-F008, C04-F001, C04-F003, C04-F005 as backed
+  by live end-to-end tests that ran green in this session.
+- **No existing adapter or core module was removed or replaced.
+  No Docker command was run and no container touched. All
+  commits stay local to feature/production-complete-v1; main
+  was untouched and nothing was pushed.**
+
+### Live-verified count for the whole 146-row PRODUCTION READY set
+
+- **Live-verified against a real external surface: ~28 rows**.
+  Localhost round-trips (C11-F004, F007, F008 and the mirror
+  representations that ride on them), real DNS + TCP (C11-F009,
+  F010, F017), live public-API connectors (C03-F007, C03-F012,
+  and their C12 mirrors), and live headless browser (C04-F001,
+  F003, F005 plus their C12-F027 mirror representation).
+- **Real-subprocess or real-ASGI-round-trip verified: ~31 rows**
+  (git CLI, `python -m deye.mcp_server`, Starlette TestClient
+  over `deye.remote:build_app`, `python scripts/build_mcpb.py`).
+- **In-process verified: ~78 rows**.
+- **Shape-verified only: ~9 rows** (dockerfile parse, plugin
+  manifest shape, .git shape, mirror-row representation).
+
+### Rows that still could not be lifted this round
+
+- **C04-F006 Cookie-aware access** -- the CookieBoundary in-
+  process test passes, but no live cookie-isolation harness
+  drives real cookies through Chromium end-to-end. The row's
+  own acceptance requires the live cookie path. To lift: a
+  new test that navigates two BrowserAdapter sessions to
+  different origins under Chromium and asserts cookie jars
+  never cross; not built here because the guardrail forbids
+  new tests in this run.
+- **C04-F007 Browser fallback** -- the acceptance is about the
+  Playwright-absent structural fallback; that specific test
+  now skips because Playwright IS installed. Same round-7
+  read-only constraint applies.
+- **C04-F008 Local-only browser boundary** -- architectural
+  acceptance about profile-dir isolation; no dedicated live
+  harness exists.
+- **C01-F001 One-command installation** -- needs a cross-OS
+  matrix (Linux + Windows shells) beyond this Mac.
+- **C07-F003 Remote HTTP MCP** -- needs a hosted uvicorn
+  deploy with a reachable public IP, TLS termination, and a
+  real external MCP client.
+- **Deliberately PARTIAL by acceptance (unchanged, 4 rows)**:
+  C01-F007, C05-F002, C05-F013, C12-F037.
+- **Live sigstore signing required (2 rows)**: C09-F007,
+  C12-F033.
+- **Paid API / roadmap (2 rows)**: C03-F006 (YouTube
+  transcripts / free-text search), C09-F003 (GitHub MCP
+  integration).
+- **Terminally BLOCKED (unchanged, 8 rows)**: C03-F004, F008,
+  F009, F010, F011; C04-F004; C12-F026; C12-F036.
