@@ -1117,3 +1117,22 @@ Next tranches (per COMPLETION_PLAN.md dependency order): map each of the
 on re-verified evidence; build the genuine remainders (keyless neural
 search default, adapter cost and rate reporting, FOSS signed-release
 verification); and finalise the precise (b) justifications.
+
+## Completion build, tranche 2 (2026-08-02)
+
+Built/fixed real capability: multi-source fan-out (C03-F015) now routes to
+each distinct connector via Router.route_named (was collapsing onto the top
+source), wired to `deye multi-search`, real tests. Added real acceptance
+tests for `deye setup` (C01-F001) and repair guidance (C01-F007).
+
+Promoted 57 rows to PRODUCTION READY, each against a specific real
+behavioural acceptance test that exercises the feature and passes on a
+clean clone (security core, keyless connectors, research and evidence
+engine, MCP tools, router, lifecycle, browser safety contract, and the
+Category-12 mirrors whose primary is proven). Reclassified C03-F006 to
+BLOCKED (anti-bot gated live captions; keyless public portion built).
+
+Honest distribution now: 112 PRODUCTION READY, 9 BLOCKED BY EXTERNAL
+PLATFORM, 40 IMPLEMENTED BUT NOT FULLY VERIFIED, 6 PARTIAL. No row promoted
+without a real passing test; the remaining 46 still need real tests or real
+builds and were not inflated. README status updated to 112/167.

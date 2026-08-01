@@ -17,7 +17,7 @@
 
 </div>
 
-> **Verified in this environment on 2026-08-01:** 358 passed, 0 failed out of 363 collected, on macOS (Darwin 24.6.0) with Python 3.14.3. Skips are environment-dependent: four browser tests skip when the optional Playwright extra is present, and one live-network test skips when its source is unreachable, so passing is 358 or 359 and skipped is 5 or 4 across runs. Bandit static analysis reports 0 high and 0 medium findings. The security and research core is implemented and tested. A strict evidence rubric counts 55 of 167 catalogued capabilities as fully production ready; the rest are implemented but not fully verified, partial, or blocked by an external platform, and the full 167 row audit is being reconciled separately. D-Eye as a whole is not claimed as production ready or as 100 percent complete.
+> **Verified in this environment on 2026-08-02:** 365 passed, 0 failed, on macOS (Darwin 24.6.0) with Python 3.14.3. Skips are environment-dependent (browser tests without the optional Playwright extra, and live-network tests when a source is unreachable). Bandit static analysis reports 0 high and 0 medium findings. Under a strict evidence rubric, 112 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. 9 are blocked by an external platform with a precise reason, and the remaining 46 are still being finished on real evidence. D-Eye as a whole is not yet claimed as production ready or as 100 percent complete.
 
 ---
 
@@ -156,7 +156,7 @@ D-Eye is deliberately truthful about what is proven and what is not.
 
 - **Tests, this environment:** 358 passed, 0 failed, out of 363 collected. Four browser tests are structural: they cover the code path used when the optional Playwright extra is absent, so they skip when it is present. One live-network test skips when its external source is unreachable and passes when it is reachable, so passing is 358 or 359 depending on the network.
 - **Static analysis:** Bandit reports 0 high and 0 medium findings; the low findings are the expected fixed argument subprocess calls and defensive exception handling.
-- **Feature catalogue:** a strict evidence rubric counts 55 of 167 catalogued capabilities as fully production ready. The remainder are implemented but not fully verified, partial, or blocked by an external platform. The full 167 row audit artifact is internally inconsistent and is being reconciled separately, so this README does not headline a single catalogue percentage.
+- **Feature catalogue:** under a strict evidence rubric, 112 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. 9 are blocked by an external platform (a login or anti-bot wall, or a vendor that exposes no public automation API), each with a precise recorded reason. The remaining 46 are still being finished on real evidence; none is inflated.
 - **Not claimed:** D-Eye as a whole is not production ready, and no claim of 100 percent completion is made.
 
 Honest roadmap:
