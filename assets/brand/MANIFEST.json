@@ -1,0 +1,62 @@
+{
+  "schema": "d-eye-brand/2",
+  "generated_at": "2026-08-01",
+  "note": "The approved D-Eye brand assets. logo.png and logo.svg are copied verbatim, byte for byte, from the two approved originals at the workspace root; logo.png is the README hero and logo.svg is kept for square or small contexts. architecture.png and architecture.svg are the approved architecture diagram. Every sha256 below is the real hash of the bytes in this directory, verified at copy time. There are no theme variants and no derived rasters: one approved logo, used as authored.",
+  "usage_policy": {
+    "recoloring": "never. Use the assets as authored; do not apply CSS filters or invert.",
+    "resizing": "the README hero renders logo.png at 360 px wide; preserve aspect ratio.",
+    "replacement": "any replacement must be copied from an approved workspace-root original and this manifest plus the sha256 checks in tests/test_branding.py updated to match."
+  },
+  "assets": [
+    {
+      "id": "logo.png",
+      "filename": "logo.png",
+      "path_in_repo": "assets/brand/logo.png",
+      "mime": "image/png",
+      "sha256": "4a4b48e59663efe88a6b1905cf16b48a0035821a900d3e592be5d5bc651b05c1",
+      "size_bytes": 116118,
+      "role": "readme-hero",
+      "approved_source": "D-Eye_Icon.png (workspace root)"
+    },
+    {
+      "id": "logo.svg",
+      "filename": "logo.svg",
+      "path_in_repo": "assets/brand/logo.svg",
+      "mime": "image/svg+xml",
+      "sha256": "e07f32c142872c4f76ab4c47e332a21ddef7e6d3c37241e97521c45af81c255b",
+      "size_bytes": 74344,
+      "role": "square-and-small-contexts",
+      "approved_source": "D-Eye_Icon.svg (workspace root)"
+    },
+    {
+      "id": "architecture.png",
+      "filename": "architecture.png",
+      "path_in_repo": "assets/brand/architecture.png",
+      "mime": "image/png",
+      "sha256": "0c5b96d8df56763995ca5a06955e8e33d5094fa95b5adc74daa006e09b812e3f",
+      "size_bytes": 159452,
+      "role": "readme-architecture-diagram",
+      "approved_source": "D-Eye_Architecture.png (workspace root)"
+    },
+    {
+      "id": "architecture.svg",
+      "filename": "architecture.svg",
+      "path_in_repo": "assets/brand/architecture.svg",
+      "mime": "image/svg+xml",
+      "sha256": "5f0bf45031992ce33cc3aa65ca0d0ceecd403495c123c3ff47582bb8198dce33",
+      "size_bytes": 42383,
+      "role": "architecture-source",
+      "approved_source": "D-Eye_Architecture.svg (workspace root)"
+    }
+  ],
+  "readme_hero": "assets/brand/logo.png",
+  "plugin_logo": "assets/brand/logo.svg",
+  "removed_superseded_assets": [
+    "assets/branding/D-Eye_Icon.svg",
+    "assets/branding/D-Eye_Icon1.svg",
+    "assets/branding/D-Eye_Icon2.svg",
+    "assets/branding/D-Eye_Icon21.svg",
+    "assets/branding/derivatives/D-Eye_dark.png",
+    "assets/branding/derivatives/D-Eye_light.png"
+  ]
+}

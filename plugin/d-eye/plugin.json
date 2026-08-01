@@ -24,10 +24,8 @@
     "cookies_never_uploaded": true
   },
   "branding": {
-    "logo_light_ref": "assets/branding/D-Eye_Icon21.svg",
-    "logo_dark_ref": "assets/branding/D-Eye_Icon1.svg",
-    "logo_light_raster_ref": "assets/branding/derivatives/D-Eye_light.png",
-    "logo_dark_raster_ref": "assets/branding/derivatives/D-Eye_dark.png",
-    "manifest_ref": "assets/branding/MANIFEST.json"
+    "logo": "assets/brand/logo.svg",
+    "logo_raster": "assets/brand/logo.png",
+    "manifest_ref": "assets/brand/MANIFEST.json"
   }
 }

@@ -22,9 +22,8 @@
     "changelog_reference": "CHANGELOG.md"
   },
   "branding": {
-    "logo_reference": "assets/branding/D-Eye_Icon21.svg",
-    "logo_dark_reference": "assets/branding/D-Eye_Icon1.svg",
-    "raster_reference": "assets/branding/derivatives/D-Eye_light.png",
-    "manifest_reference": "assets/branding/MANIFEST.json"
+    "logo_reference": "assets/brand/logo.svg",
+    "raster_reference": "assets/brand/logo.png",
+    "manifest_reference": "assets/brand/MANIFEST.json"
   }
 }

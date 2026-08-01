@@ -63,6 +63,7 @@ operate D-Eye, and each adapter is off by default.
 
 ## Icon assets
 
-The D-Eye icon assets under `assets/branding/` were supplied by the D-Eye
-project owner; use is subject to the project MIT licence. See
-`assets/branding/MANIFEST.json` for canonical hashes and provenance.
+The D-Eye icon assets under `assets/brand/` are the approved D-Eye brand
+icons, supplied by the D-Eye project owner; use is subject to the project
+MIT licence. See `assets/brand/MANIFEST.json` for canonical hashes and
+provenance.

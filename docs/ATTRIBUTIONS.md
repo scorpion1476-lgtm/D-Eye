@@ -50,7 +50,7 @@ and replacement path in:
 
 ## Icon assets
 
-The D-Eye icon assets under `assets/branding/` were supplied by the
-D-Eye project owner and are covered by the D-Eye MIT licence. Their
-provenance is recorded in
-[`assets/branding/MANIFEST.json`](../assets/branding/MANIFEST.json).
+The D-Eye icon assets under `assets/brand/` are the approved D-Eye brand
+icons, supplied by the D-Eye project owner and covered by the D-Eye MIT
+licence. Their provenance is recorded in
+[`assets/brand/MANIFEST.json`](../assets/brand/MANIFEST.json).
