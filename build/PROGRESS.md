@@ -1077,3 +1077,43 @@ run live and pass, providing additional LIVE-verified evidence
   integration).
 - **Terminally BLOCKED (unchanged, 8 rows)**: C03-F004, F008,
   F009, F010, F011; C04-F004; C12-F026; C12-F036.
+
+---
+
+## Completion build, tranche 1 (2026-08-01)
+
+Baseline confirmed: strict reconciled distribution 55 PRODUCTION READY,
+96 IMPLEMENTED BUT NOT FULLY VERIFIED, 8 PARTIAL, 8 BLOCKED. Full suite
+green (356 to 363 passed across runs, 0 failed; the swing is live-network
+reachability). Plan recorded in build/COMPLETION_PLAN.md.
+
+Delivered this tranche:
+- C03-F006 YouTube transcripts: built a real keyless `transcript`
+  capability. New `YouTubeTranscript` connector reads a video's public
+  captions via YouTube's keyless timedtext endpoint and, as a fallback,
+  the public watch-page player response (captionTracks baseUrl). Routes
+  through the SSRF-safe fetch path, labels captions untrusted evidence,
+  and degrades cleanly. Wired into `deye transcript <url>` and the
+  router's `transcript` capability. Real acceptance tests in
+  tests/test_youtube_transcript.py (id extraction, real timedtext parse
+  and unescaping, no-captions degrade, router reachability, CLI
+  registration, skip-guarded live endpoint). Commit a456bf7.
+
+Honest finding (recorded, not worked around): reliable live captions are
+gated by YouTube's anti-bot CAPTCHA (an automated watch-page GET is
+redirected to google.com/sorry) and the legacy timedtext list endpoint is
+deprecated. The build rules forbid evading anti-bot defences, so the
+live-caption path for C03-F006 is recorded under criterion (b); the
+genuinely public portion is built, tested, and degrades cleanly.
+
+Evidence map produced for the 112 non-PR rows: 67 already cite a genuinely
+behavioural test file; the remainder rely on shape-only tests, have no
+test, or are genuine (b). Promotion of any row happens only against a
+specific real acceptance test re-verified on a clean clone, per the
+honesty rules; no mass promotion was performed.
+
+Next tranches (per COMPLETION_PLAN.md dependency order): map each of the
+67 behaviourally-tested rows to its specific acceptance test and promote
+on re-verified evidence; build the genuine remainders (keyless neural
+search default, adapter cost and rate reporting, FOSS signed-release
+verification); and finalise the precise (b) justifications.
