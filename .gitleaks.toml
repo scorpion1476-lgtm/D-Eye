@@ -1,0 +1,8 @@
+title = "D-Eye gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic secret-shaped fixtures used only to test the redactor"
+paths = ['''tests/test_redact\.py''']
