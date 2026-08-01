@@ -113,7 +113,7 @@ def test_multi_source_search_aggregates_and_dedups(monkeypatch):
     class _FakeRouter:
         registry = _FakeReg()
 
-        def route(self, cap, request):
+        def route_named(self, name, request):
             return Envelope(
                 content="same content",
                 source=Source(url="https://x/y", connector="fake",
@@ -141,7 +141,7 @@ def test_multi_source_captures_per_source_errors():
     class _FakeRouter:
         registry = _FakeReg()
 
-        def route(self, cap, request):
+        def route_named(self, name, request):
             raise RuntimeError("boom")
 
     result = multi_source_search(_FakeRouter(), "q", capabilities=("search",),

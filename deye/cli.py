@@ -109,6 +109,17 @@ def cmd_transcript(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_multi_search(args, cfg: Config) -> int:
+    from deye.app import multi_source_research
+    out = multi_source_research(build_router(cfg), args.query,
+                                capabilities=tuple(args.capabilities.split(",")))
+    pkt = out["packet"]
+    _print({"query": args.query, "sources": len(pkt.get("envelopes", [])),
+            "errors": out["per_source_errors"],
+            "dedup_clusters": len(out["dedup_clusters"])})
+    return 0
+
+
 def cmd_graph(args, cfg: Config) -> int:
     from deye.app import evidence_graph
     g = evidence_graph(args.query or "", config=cfg)
@@ -231,6 +242,11 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("url", help="a YouTube watch URL, youtu.be link, or 11-char id")
     tr.add_argument("--lang", default=None, help="preferred caption language prefix, e.g. en")
 
+    ms = sub.add_parser("multi-search", help="fan a query across several public connectors + dedupe")
+    ms.add_argument("query")
+    ms.add_argument("--capabilities", default="search",
+                    help="comma-separated capabilities to fan out (default: search)")
+
     g = sub.add_parser("graph", help="build an evidence graph + contradiction candidates")
     g.add_argument("query", nargs="?", default="", help="filter term (blank = recent evidence)")
     g.add_argument("--markdown", action="store_true", help="write a Markdown report")
@@ -271,7 +287,8 @@ _DISPATCH = {
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
     "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
     "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
-    "transcript": cmd_transcript, "lifecycle": cmd_lifecycle,
+    "transcript": cmd_transcript, "multi-search": cmd_multi_search,
+    "lifecycle": cmd_lifecycle,
 }
 
 

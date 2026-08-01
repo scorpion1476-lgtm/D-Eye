@@ -100,6 +100,40 @@ class Router:
 
         raise RouterError(f"all backends failed for '{capability}': {last_error}")
 
+    def route_named(self, name: str, request: dict) -> Envelope:
+        """Run one specific connector by name, inheriting the same consent
+        gate, health check, circuit breaker, and redacted audit as `route`.
+
+        Used by multi-source fan-out, where routing by capability alone would
+        collapse every source onto the single top-preference connector.
+        """
+        manifest = next((m for m in self.registry.manifests if m.name == name), None)
+        if manifest is None:
+            raise RouterError(f"no connector named '{name}'")
+        decision = self.consent.permits(manifest.name, is_write=manifest.is_write)
+        if not decision.allowed:
+            self.audit.append({"connector": name, "skipped": decision.reason})
+            raise RouterError(decision.reason)
+        if manifest.factory is None:
+            raise RouterError(f"connector '{name}' has no factory")
+        if self._breaker(name).is_open():
+            raise RouterError(f"connector '{name}' circuit open")
+        connector = manifest.factory()
+        report = connector.health()
+        if not report.usable:
+            self._breaker(name).record(False)
+            raise RouterError(f"{name}: {report.detail or report.status}")
+        try:
+            env = connector.run(request)
+            self._breaker(name).record(True)
+            self.audit.append({"connector": name, "capability": manifest.capability, "ok": True})
+            return env
+        except Exception as exc:  # noqa: BLE001 -- record redacted + re-raise
+            self._breaker(name).record(False)
+            self.audit.append({"connector": name, "ok": False,
+                               "error": redact(str(exc))[:200]})
+            raise
+
     def health_all(self) -> list[dict]:
         out = []
         for manifest in sorted(self.registry.manifests, key=lambda m: (m.capability, m.preference)):

@@ -109,6 +109,16 @@ def youtube_transcript(router: Router, url: str, *, lang: str = "") -> Envelope:
     return router.route("transcript", request)
 
 
+def multi_source_research(router: Router, query: str, *,
+                          capabilities=("search",), max_workers: int = 4) -> dict:
+    """Fan the query out across every distinct connector of the given
+    capabilities, merge into one packet, and deduplicate near-duplicates."""
+    from deye.research.multi_source import multi_source_search
+    result = multi_source_search(router, query, capabilities=tuple(capabilities),
+                                 max_workers=max_workers)
+    return result.to_dict()
+
+
 def evidence_graph(query: str = "", *, config: Config | None = None,
                    limit: int = 200) -> EvidenceGraph:
     """Build the entity/claim graph (with contradiction candidates) over stored evidence."""

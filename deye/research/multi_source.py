@@ -56,7 +56,11 @@ def multi_source_search(router, query: str, *,
 
     def _one(name: str, cap: str):
         try:
-            env = router.route(cap, {"query": query})
+            # Route to THIS specific connector by name. Routing by capability
+            # alone would collapse every candidate onto the single top-
+            # preference connector, so the fan-out would query one source N
+            # times instead of N distinct sources.
+            env = router.route_named(name, {"query": query})
             return name, env, None
         except Exception as exc:  # noqa: BLE001 -- record + continue
             return name, None, str(exc)
