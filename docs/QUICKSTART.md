@@ -71,8 +71,8 @@ with SPDX licence, purpose, and replacement path.
 ./.venv/bin/deye init-claude             # actually write the config
 ```
 
-Restart Claude Desktop after registration. See [`CLAUDE_SURFACE_SUPPORT.md`](CLAUDE_SURFACE_SUPPORT.md)
-for what happens on each Claude surface.
+Restart Claude Desktop after registration. Run `deye doctor --surfaces`
+for an honest report of what happens on each Claude surface.
 
 ## 7. Zero-network mode
 

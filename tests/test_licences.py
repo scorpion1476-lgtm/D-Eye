@@ -14,8 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCAN = (Path(__file__).resolve().parent.parent.parent.parent
-        / "scripts" / "scan_licences.py")
+SCAN = Path(__file__).resolve().parent.parent / "scripts" / "scan_licences.py"
 
 
 def test_licence_scan_runs():

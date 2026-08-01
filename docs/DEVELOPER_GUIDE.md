@@ -39,9 +39,9 @@ repository/deye/
 │   ├── hook-shim.sh         # local `deye doctor` invocation
 │   ├── commands/            # 4 slash commands
 │   └── skills/              # 8 SKILL.md files, one per D-Eye skill
-├── tests/                   # 234+ tests
+├── tests/                   # test suite (358 passing; see docs/TEST_REPORT.md)
 ├── docs/                    # user-facing guides
-└── scripts/                 # gen_sbom, sign_release, verify_repo, ...
+└── scripts/                 # gen_sbom, scan_licences, run_pip_audit, verify_repo, ...
 ```
 
 ## Running everything

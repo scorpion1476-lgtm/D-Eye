@@ -1,6 +1,16 @@
 # D-Eye - Test Report
 
-**Date:** 2026-07-29 · **Branch:** feature/phase-b-hardening (Phase B; supersedes Phase A row below)
+> **Current run (2026-08-01, macOS Darwin 24.6.0, Python 3.14.3):** the full
+> suite is **358 passed, 0 failed out of 363 collected** via
+> `./.venv/bin/python -m pytest -q -rs`. Four browser tests skip when the
+> optional Playwright extra is present, and one live-network test skips
+> when its source is unreachable (it passes when reachable), so passing is
+> 358 or 359 and skipped is 5 or 4 across runs. Bandit reports 0 high and 0
+> medium findings, and the live OSV pip-audit reports no known
+> vulnerabilities. The per-phase tables below are historical snapshots;
+> their smaller counts (62, 66, 69, 73) are superseded by the current run.
+
+**Date (historical snapshot):** 2026-07-29 · Phase B, superseding the Phase A row below
 
 ## Runs executed - Phase B (macOS, Python 3.14.3)
 

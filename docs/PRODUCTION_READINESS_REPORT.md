@@ -1,8 +1,17 @@
-# D-Eye - Production Readiness Report
+# D-Eye - Production Readiness Report (historical)
 
-> **Current state (2026-07-29):** This branch (`feature/phase-b-hardening`, PR #1 into `main`) carries the combined Phase A + Phase B tree. Validated: core **69 passed / 1 skipped**, with MCP extras **73 passed / 0 skipped**, bandit 0, pip-audit 0, SBOM generated. CI was observed on the push and PR; tests/bandit/secret-scan/pip-audit/SBOM pass. The `dependency-review` check is red only because GitHub Code Security / Advanced Security (GHAS) is unavailable in this private-repo plan - **BLOCKED BY EXTERNAL PLATFORM** (dependency-CVE coverage is provided by the passing pip-audit job; the Node 20 deprecation notice is advisory only).
+> **Historical record.** This is a Phase A and Phase B snapshot from
+> 2026-07-28 to 2026-07-29. The branches it names
+> (`feature/phase-a-foundation`, `feature/phase-b-hardening`) have since
+> been consolidated into the current line, and its test counts are
+> superseded.
 >
-> The Phase-A section below is retained as a **historical pre-integration record - superseded on 2026-07-29**; its "no green Actions run observed" and "recommended next actions" no longer reflect the current state.
+> For current, authoritative status see the "Status, honestly" section of
+> the top-level [`README.md`](../README.md). The latest verified run is 358
+> passed, 0 failed out of 363 collected, and under the strict evidence
+> rubric 55 of 167 catalogue rows are PRODUCTION READY. The Phase-A section below is a
+> pre-integration record; its per-item states and "recommended next
+> actions" no longer reflect the current tree.
 
 **Date:** 2026-07-28 · **Baseline:** v0.2.0-validated · **Branch:** feature/phase-a-foundation
 

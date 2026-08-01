@@ -1,7 +1,14 @@
 # D-Eye README product review
 
-Produced 2026-07-30. This document reviews the current README against
+Produced 2026-07-30. This document reviews an earlier README against
 the product-review checklist and records the state of each item.
+
+> **Superseded.** The README was later redesigned. The current README uses
+> a single approved raster logo (`assets/brand/logo.png`) as a centred hero
+> and embeds the architecture diagram as an image, not a `<picture>`
+> element or a Mermaid fence. The branding asset paths named below (under
+> `assets/branding/`) were removed. Read this file as a historical record
+> of the pre-redesign README, not a description of the current one.
 
 ## Header
 
@@ -37,7 +44,7 @@ the product-review checklist and records the state of each item.
 | Offline test path | Offline mode section + `DEYE_OFFLINE=1` env var |
 | Architecture explanation | "Architecture at a glance" |
 | Architecture diagram | Mermaid `flowchart LR`, ASCII-only characters |
-| Capability table linked to catalogue | Capabilities table + link to `docs/FEATURE_TRACEABILITY.csv` |
+| Capability table with honest status | Capabilities table plus the honest status section in the README |
 | Skills section | Skills table + link to `docs/SKILLS_GUIDE.md` |
 | Connector section | Connectors section + link to `docs/CONNECTOR_GUIDE.md`, explicitly separates keyless FOSS, optional external, and platform-boundary stubs |
 | Practical commands | Nine numbered workflows |

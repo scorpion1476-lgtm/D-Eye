@@ -27,7 +27,7 @@ def _osv_reachable() -> bool:
         return False
 
 
-DUMP = Path(__file__).resolve().parent.parent.parent.parent / "scripts" / "dump_requirements.py"
+DUMP = Path(__file__).resolve().parent.parent / "scripts" / "dump_requirements.py"
 
 
 @pytest.mark.skipif(not DUMP.exists(), reason="scripts/dump_requirements.py not found")

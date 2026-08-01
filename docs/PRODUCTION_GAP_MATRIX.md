@@ -1,18 +1,23 @@
-# D-Eye - Production Gap Matrix (superseded - historical only)
+# D-Eye - Production Gap Matrix (superseded, historical only)
 
-> **SUPERSEDED 2026-07-30.** This file is retained as a historical record.
-> The current, authoritative production-readiness status is in
-> `docs/PRODUCTION_READINESS_REPORT.md` at the workspace root and in
-> `docs/FEATURE_TRACEABILITY.csv`. As of 2026-07-30: 63 rows PRODUCTION
-> READY, 84 IMPLEMENTED BUT NOT FULLY VERIFIED, 12 PARTIAL, 0 NOT
-> IMPLEMENTED, 8 BLOCKED BY EXTERNAL PLATFORM (total 167).
+> **SUPERSEDED.** This file is a historical snapshot from 2026-07-29 to
+> 2026-07-30, retained only as a record. Do not treat any status or number
+> below as current.
 >
-> The text below reflects state on 2026-07-29 and its per-row assessments
-> are stale (browser adapter, multi-tenant scoping, licence-drift
-> enforcement, MCP tool invocation, live OSV audit, plus 8+ specialised
-> D-Eye skills have all shipped since). It also references external
-> product names that D-Eye's documentation policy now keeps in
-> `THIRD_PARTY_NOTICES.md` only. Do not treat this document as current.
+> The current, authoritative status is the "Status, honestly" section of
+> the top-level [`README.md`](../README.md). Under the strict evidence
+> rubric, 55 of 167 catalogue rows are PRODUCTION READY; the remainder are
+> IMPLEMENTED BUT NOT FULLY VERIFIED, PARTIAL, or BLOCKED BY EXTERNAL
+> PLATFORM. An earlier local pass that reached 146 PRODUCTION READY, and
+> the 63 provisional figure once cited here, were both corrected downward
+> to the strict rubric of 55.
+>
+> The per-row assessments below reflect state on 2026-07-29 and are stale
+> (the browser adapter, multi-tenant scoping, licence-drift enforcement,
+> MCP tool invocation, live OSV audit, and the specialised D-Eye skills
+> have all shipped since). This file also references external product
+> names that D-Eye's documentation policy now keeps in
+> `THIRD_PARTY_NOTICES.md` only.
 
 **Baseline:** v0.2.0-validated · **Working branch:** feature/phase-a-foundation
 **Last updated:** 2026-07-28 (Phase A: evidence graph, GitHub + Exa connectors, security CI)

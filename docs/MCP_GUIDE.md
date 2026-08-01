@@ -82,8 +82,9 @@ Put a reverse proxy in front for TLS termination.
 inside a Claude tenant (Claude web, Projects, Cowork) is a security-
 critical action performed by the account owner via the Claude UI or
 the tenant's admin API. D-Eye ships the endpoint the tenant consumes
-but cannot silently register itself into a third-party account. See
-[`CLAUDE_SURFACE_SUPPORT.md`](CLAUDE_SURFACE_SUPPORT.md).
+but cannot silently register itself into a third-party account. Run
+`deye doctor --surfaces` for an honest report of which client surfaces
+D-Eye can be active in.
 
 ## Real MCP subprocess acceptance tests
 
