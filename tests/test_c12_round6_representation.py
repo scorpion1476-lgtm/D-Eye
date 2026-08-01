@@ -17,7 +17,6 @@ import json
 import subprocess
 from pathlib import Path
 
-WORKSPACE = Path(__file__).resolve().parents[3]
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -107,7 +106,7 @@ def test_c12_f011_safe_get_actually_wires_the_pinned_connection_classes():
 
 
 def test_c12_f022_install_sh_exists_and_declares_safe_shell_shape():
-    install = WORKSPACE / "scripts" / "install.sh"
+    install = REPO / "scripts" / "install.sh"
     assert install.exists(), f"expected {install} to exist"
     txt = install.read_text()
     first = txt.splitlines()[0]
@@ -173,7 +172,7 @@ def test_c12_f025_docker_compose_shape_binds_loopback_and_requires_token():
 def test_c12_f025_remote_deployment_guide_is_present_and_names_reverse_proxy():
     guides = [
         REPO / "docs" / "REMOTE_DEPLOYMENT.md",
-        WORKSPACE / "docs" / "MCP_DEPLOYMENT.md",
+        REPO / "docs" / "MCP_DEPLOYMENT.md",
     ]
     found = None
     for g in guides:

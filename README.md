@@ -69,7 +69,7 @@ Prerequisite: Python 3.10 or newer. The core install pulls zero runtime dependen
 ```bash
 # 1. install the core (FOSS, no keys, no accounts)
 git clone https://github.com/scorpion1476-lgtm/D-Eye D-Eye
-cd D-Eye/repository/deye
+cd D-Eye
 python3 -m venv .venv
 ./.venv/bin/python -m pip install -e .
 
@@ -171,7 +171,7 @@ Honest roadmap:
 ## Repository layout
 
 ```
-repository/deye/
+D-Eye/             (the clone root is the package root)
   deye/            core package: core (policy, router, evidence, provenance, redact),
                    connectors, research, skills, backend, browser, lifecycle
   tests/           test suite (unit, integration, live network, subprocess, browser)
@@ -185,7 +185,7 @@ repository/deye/
 
 ## Contributing
 
-Start with [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md). Run the suite with `./.venv/bin/python -m pytest -q -rs`, check for forbidden dash characters with `python3 scripts/scan_ui_dashes.py`, and scaffold a new connector against the D-Eye contract with the `connector_builder` skill. New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation.
+Start with [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md). Install the dev extra first, which provides pytest: `./.venv/bin/python -m pip install -e '.[dev]'`. Then run the suite with `./.venv/bin/python -m pytest -q -rs`. The MCP and remote tests use the `mcp` and `remote` extras, and the browser tests use `.[browser]` plus `playwright install chromium`; without those extras the affected tests skip cleanly. Check for forbidden dash characters with `python3 scripts/scan_ui_dashes.py`, and scaffold a new connector against the D-Eye contract with the `connector_builder` skill. New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation.
 
 ## Security policy
 

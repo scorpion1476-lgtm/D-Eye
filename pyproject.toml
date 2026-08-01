@@ -14,6 +14,7 @@ mcp = ["mcp[cli]>=1.0,<2"]  # FastMCP API; mcp 2.x renamed it to MCPServer (brea
 secrets = ["keyring>=24.0"]
 remote = ["mcp[cli]>=1.0,<2", "uvicorn>=0.30", "starlette>=0.37"]
 rich = ["feedparser>=6.0", "requests>=2.28"]
+browser = ["playwright>=1.40"]  # opt-in local browser adapter; off by default
 dev = ["pytest>=8.0", "ruff>=0.8"]
 
 [project.scripts]
