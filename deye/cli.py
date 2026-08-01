@@ -96,6 +96,19 @@ def cmd_repo(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_transcript(args, cfg: Config) -> int:
+    from deye.app import youtube_transcript
+    env = youtube_transcript(build_router(cfg), args.url, lang=args.lang or "")
+    art = env.artifacts[0] if env.artifacts else {}
+    _print({"video_id": art.get("video_id"), "lang": art.get("lang"),
+            "available": art.get("available"),
+            "auto_generated": art.get("auto_generated"),
+            "segments": art.get("segment_count", 0), "warnings": env.warnings})
+    print("---")
+    _print(env.content[:4000])
+    return 0
+
+
 def cmd_graph(args, cfg: Config) -> int:
     from deye.app import evidence_graph
     g = evidence_graph(args.query or "", config=cfg)
@@ -214,6 +227,10 @@ def build_parser() -> argparse.ArgumentParser:
     rp = sub.add_parser("repo", help="inspect a public GitHub repository (read-only)")
     rp.add_argument("repo", help="owner/name or a github.com URL")
 
+    tr = sub.add_parser("transcript", help="fetch a YouTube video's public captions (keyless)")
+    tr.add_argument("url", help="a YouTube watch URL, youtu.be link, or 11-char id")
+    tr.add_argument("--lang", default=None, help="preferred caption language prefix, e.g. en")
+
     g = sub.add_parser("graph", help="build an evidence graph + contradiction candidates")
     g.add_argument("query", nargs="?", default="", help="filter term (blank = recent evidence)")
     g.add_argument("--markdown", action="store_true", help="write a Markdown report")
@@ -254,7 +271,7 @@ _DISPATCH = {
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
     "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
     "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
-    "lifecycle": cmd_lifecycle,
+    "transcript": cmd_transcript, "lifecycle": cmd_lifecycle,
 }
 
 

@@ -101,6 +101,14 @@ def inspect_repo(router: Router, repo: str) -> Envelope:
     return router.route("repo.inspect", {"repo": repo})
 
 
+def youtube_transcript(router: Router, url: str, *, lang: str = "") -> Envelope:
+    """Fetch a YouTube video's public captions via the keyless timedtext path."""
+    request = {"url": url}
+    if lang:
+        request["lang"] = lang
+    return router.route("transcript", request)
+
+
 def evidence_graph(query: str = "", *, config: Config | None = None,
                    limit: int = 200) -> EvidenceGraph:
     """Build the entity/claim graph (with contradiction candidates) over stored evidence."""
