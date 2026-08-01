@@ -15,7 +15,7 @@ secrets = ["keyring>=24.0"]
 remote = ["mcp[cli]>=1.0,<2", "uvicorn>=0.30", "starlette>=0.37"]
 rich = ["feedparser>=6.0", "requests>=2.28"]
 browser = ["playwright>=1.40"]  # opt-in local browser adapter; off by default
-dev = ["pytest>=8.0", "ruff>=0.8"]
+dev = ["pytest>=8.0", "ruff>=0.8", "pip-audit>=2.7"]  # pip-audit runs the live OSV security test
 
 [project.scripts]
 deye = "deye.cli:main"

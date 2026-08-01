@@ -185,7 +185,7 @@ D-Eye/             (the clone root is the package root)
 
 ## Contributing
 
-Start with [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md). Install the dev extra first, which provides pytest: `./.venv/bin/python -m pip install -e '.[dev]'`. Then run the suite with `./.venv/bin/python -m pytest -q -rs`. The MCP and remote tests use the `mcp` and `remote` extras, and the browser tests use `.[browser]` plus `playwright install chromium`; without those extras the affected tests skip cleanly. Check for forbidden dash characters with `python3 scripts/scan_ui_dashes.py`, and scaffold a new connector against the D-Eye contract with the `connector_builder` skill. New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation.
+Start with [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md). Install the dev extra first, which provides pytest and the pip-audit tool used by the live security test: `./.venv/bin/python -m pip install -e '.[dev]'`. Then run the suite with `./.venv/bin/python -m pytest -q -rs`. The MCP and remote tests use the `mcp` and `remote` extras, and the browser tests use `.[browser]` plus `playwright install chromium`; without those extras the affected tests skip cleanly. Check for forbidden dash characters with `python3 scripts/scan_ui_dashes.py`, and scaffold a new connector against the D-Eye contract with the `connector_builder` skill. New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation.
 
 ## Security policy
 
