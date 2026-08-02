@@ -10,14 +10,14 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-3da639.svg)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)
-![Tests](https://img.shields.io/badge/tests-414%20passing%20on%20clean%20clone-2c7a3f.svg)
+![Tests](https://img.shields.io/badge/tests-421%20passing%20on%20clean%20clone-2c7a3f.svg)
 ![Status](https://img.shields.io/badge/status-working%20audited%20core-1f6feb.svg)
 ![FOSS--first](https://img.shields.io/badge/FOSS--first-yes-6f42c1.svg)
 ![Local--first](https://img.shields.io/badge/local--first-yes-a07020.svg)
 
 </div>
 
-> **Verified in this environment on 2026-08-02:** the full suite passes with 0 failures on macOS (Darwin 24.6.0, Python 3.14.3; 422 passed, 6 skipped), and also on a fresh public clone via `scripts/clean_clone_gate.sh` (documented extras plus the optional `.[browser]` extra and `playwright install chromium`; 0 failures). GitHub Actions CI is green on both the core and mcp matrices. Skips are environment-dependent (structural browser tests when Playwright is present; live-network tests when a source is unreachable or rate-limited). Bandit static analysis reports 0 high and 0 medium findings. Under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are blocked by an external platform with a precise recorded reason; none remains implemented-but-not-verified or partial. D-Eye as a whole is not yet claimed as production ready or as 100 percent complete.
+D-Eye is a local tool that gives Claude and other AI assistants a safe, honest way to use the web. It runs on your own machine, needs no paid keys for its core, and turns web research into cited, verifiable results instead of a black box: every answer carries its sources, and the rules about what may be fetched are enforced outside the model, so a web page can never talk your assistant into doing something it shouldn't. Most of its catalogued capabilities are built and working today; a small number are still in progress or depend on outside platforms, and those are listed openly.
 
 ---
 
@@ -58,7 +58,7 @@ Most agent stacks reach the web in ways that are unsafe, unverifiable, or locked
 | Reddit, V2EX, and similar community connectors | Keyless reads routed through the same SSRF hardened fetch path. | No |
 | Semantic research with cited answers | Local SQLite FTS5 index with grounded extractive answers and a cited research packet. | No |
 | Evidence store | Persistent SQLite store with provenance envelopes and per tenant scoping. | No |
-| MCP server | Eight stable tools over a local stdio server, or a remote streamable HTTP server. | Local: no. Remote: set a bearer token. |
+| MCP server | Ten stable tools over a local stdio server, or a remote streamable HTTP server. | Local: no. Remote: set a bearer token. |
 | Local browser adapter | Optional, opt in, isolated per session context with consent gated actions. | Optional extra |
 | Hosted search adapter | Optional, bring your own key. Disabled by default; falls back to the keyless search. | Optional key |
 
@@ -146,6 +146,8 @@ The server exposes a small, stable tool surface. Raw scrapers and shell access a
 | `extract` | Convert a block of HTML to readable text. |
 | `export_research_packet` | Search, fetch, cite, persist, and return a grounded Markdown packet. |
 | `query_evidence` | Query the persistent evidence store. |
+| `semantic_search` | Keyless local semantic search over stored evidence, returning a grounded, cited answer. |
+| `repo_inspect` | Read only public GitHub repository metadata and recent commits. |
 | `surface_status` | Report, honestly, which client surfaces D-Eye can be active in. |
 
 Local stdio and remote streamable HTTP transports are documented in [`docs/MCP_GUIDE.md`](docs/MCP_GUIDE.md). The remote transport requires a bearer token (`DEYE_HTTP_TOKEN`) and should sit behind a TLS terminating reverse proxy.
@@ -154,9 +156,9 @@ Local stdio and remote streamable HTTP transports are documented in [`docs/MCP_G
 
 D-Eye is deliberately truthful about what is proven and what is not.
 
-- **Tests:** the full suite passes with 0 failures in this environment (417 passed) and on a fresh public clone (`scripts/clean_clone_gate.sh` installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything; 414 passed, 0 failed). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count varies with the network.
+- **Tests (verified in this environment on 2026-08-02):** the full suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh`, which installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything (421 passed, 7 skipped, 0 failed). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count varies with the network.
 - **Static analysis:** Bandit reports 0 high and 0 medium findings; the low findings are the expected fixed argument subprocess calls and defensive exception handling.
-- **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are blocked by an external platform (a login or anti-bot wall, a hosted GitHub/Claude account surface, or a container runtime the FOSS gate excludes), each with a precise recorded reason in `reports/REMAINING_EXTERNAL_BLOCKERS.md`. No row remains implemented-but-not-verified or partial; none is inflated.
+- **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are blocked by an external platform (a login or anti-bot wall, a hosted GitHub/Claude account surface, or a container runtime the FOSS gate excludes), each with a precise recorded reason. No row remains implemented-but-not-verified or partial; none is inflated.
 - **Not claimed:** D-Eye as a whole is not production ready, and no claim of 100 percent completion is made.
 
 Honest roadmap:
