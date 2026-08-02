@@ -17,7 +17,7 @@
 
 </div>
 
-D-Eye is a local tool that gives Claude and other AI assistants a safe, well-sourced way to use the web. It runs on your own machine, needs no paid keys for its core, and turns web research into cited, verifiable results instead of a black box: every answer carries its sources, and the rules about what may be fetched are enforced outside the model, so a web page can never talk your assistant into doing something it shouldn't. The keyless FOSS core works today, and the project is actively growing with more on the roadmap.
+D-Eye is a local tool that gives Claude and other AI assistants a safe, well-sourced way to use the web. It runs on your own machine, is fully keyless and needs no paid third-party service, and turns web research into cited, verifiable results instead of a black box: every answer carries its sources, and the rules about what may be fetched are enforced outside the model, so a web page can never talk your assistant into doing something it shouldn't. The keyless FOSS core works today, and the project is actively growing with more on the roadmap.
 
 ---
 
@@ -65,7 +65,7 @@ Most agent stacks reach the web in ways that are unsafe, unverifiable, or locked
 | Agents fetch unsafely and can be pointed at internal addresses or cloud metadata. | Every fetch passes an SSRF gate that blocks private, loopback, link local, and cloud metadata addresses, then pins the TCP connection to the vetted IP so a hostname cannot rebind to a private target between check and connect. |
 | Answers are uncited and cannot be audited. | Every result is captured with its source URL, a retrieval timestamp, and a content hash, and research is returned as a cited packet, not a black box. |
 | Fetched text tries to steer the model ("ignore previous instructions"). | Retrieved content is labelled untrusted evidence, never instructions, and security decisions run deterministically outside the model. |
-| Many sources need a paid API key or a hosted account. | The core is keyless and uses only the Python standard library, so no paid API or hosted account is ever required. |
+| Many sources need a paid API key or a hosted account. | D-Eye is fully keyless and uses only the Python standard library, so no paid API, hosted account, or third-party service is ever required. Even its semantic, embedding-based search is D-Eye's own local FOSS implementation, not an external provider. |
 
 ## Capabilities
 

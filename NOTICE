@@ -18,11 +18,8 @@ Design inspiration and patterns studied (not vendored):
                     (Claude plugin manifest / hook shape studied; the plugin here
                      ships NO remote token and NO remote skill-sync path.)
 
-  * OpenCLI -- Apache-2.0 (referenced as an optional, user-controlled browser
-               edge connector; not implemented in this vertical slice.)
-
-Any optional hosted adapters are OPTIONAL integrations only and are never
-required by the D-Eye core, which is keyless and FOSS-first by default.
+D-Eye is fully keyless and FOSS-first: no paid API, hosted account, or
+third-party service is required by the D-Eye core.
 
 SECURITY NOTE: the supplied mcpmarket plugin archive contained a live-looking
 bearer token in its .mcp.json. That value was treated as compromised, is NOT

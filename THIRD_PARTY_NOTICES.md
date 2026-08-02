@@ -15,7 +15,6 @@ value from these projects is included in D-Eye's tracked source.
 |---|---|---|---|
 | Agent-Reach | MIT | 2025 Agent Eyes / "Neo Reid" — https://github.com/Panniantong/Agent-Reach | The capability-router idea and the URL host-allowlist pattern were studied. D-Eye's routing lives in `deye/core/router.py` + `deye/core/registry.py`; the URL host-allowlist was re-implemented and hardened into `deye/core/policy.py` (adds SSRF gate, IP pinning against DNS-rebind TOCTOU, redirect re-evaluation, decompression-bomb guard, private-IP + cloud-metadata blocks). None of the Agent-Reach source code is present in D-Eye. |
 | mcpmarket-plugin (MCPmarket) | MIT | https://github.com/knoxgraeme/mcpmarket-plugin | Claude-plugin manifest shape and hook layout were studied. D-Eye's plugin ships NO remote bearer token, NO remote-skill-sync path, and NO PostToolUse telemetry — all of which the studied plugin had. |
-| OpenCLI | Apache-2.0 | — | Referenced during design as one option for optional user-controlled browser adapters. Not implemented as a runtime dependency. |
 
 **Security note:** the mcpmarket plugin archive that was reviewed at design
 time contained a live-looking bearer token inside its `.mcp.json`. That
