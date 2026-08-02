@@ -1,10 +1,9 @@
 """D-Eye local semantic research - FOSS-first, stdlib-first.
 
-The `research` package provides D-Eye-native primitives for the semantic
-capabilities in Category 5 of the catalogue. External providers (Exa,
-Google, etc.) remain optional adapters registered as connectors; this
-package works fully offline against the local `EvidenceStore` and any
-supplied corpus.
+The `research` package provides D-Eye-native primitives for the local
+semantic capabilities. It works fully offline against the local
+`EvidenceStore` and any supplied corpus, with no key and no external
+provider required.
 
 Public surface:
     build_index(store)                   -> FTS5 index over stored sources

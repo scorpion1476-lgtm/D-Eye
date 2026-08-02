@@ -10,14 +10,14 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-3da639.svg)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)
-![Tests](https://img.shields.io/badge/tests-422%20passing%20on%20clean%20clone-2c7a3f.svg)
+![Tests](https://img.shields.io/badge/tests-418%20passing%20on%20clean%20clone-2c7a3f.svg)
 ![Status](https://img.shields.io/badge/status-working%20audited%20core-1f6feb.svg)
 ![FOSS--first](https://img.shields.io/badge/FOSS--first-yes-6f42c1.svg)
 ![Local--first](https://img.shields.io/badge/local--first-yes-a07020.svg)
 
 </div>
 
-D-Eye is a local tool that gives Claude and other AI assistants a safe, honest way to use the web. It runs on your own machine, needs no paid keys for its core, and turns web research into cited, verifiable results instead of a black box: every answer carries its sources, and the rules about what may be fetched are enforced outside the model, so a web page can never talk your assistant into doing something it shouldn't. Most of its catalogued capabilities are built and working today; a small number are still in progress or depend on outside platforms, and those are listed openly.
+D-Eye is a local tool that gives Claude and other AI assistants a safe, well-sourced way to use the web. It runs on your own machine, needs no paid keys for its core, and turns web research into cited, verifiable results instead of a black box: every answer carries its sources, and the rules about what may be fetched are enforced outside the model, so a web page can never talk your assistant into doing something it shouldn't. The keyless FOSS core works today, and the project is actively growing with more on the roadmap.
 
 ---
 
@@ -48,8 +48,8 @@ In taxonomy, D-Eye is an MCP server first, a CLI second, delivered as a plugin, 
 - [Configuration and environment](#configuration-and-environment)
 - [Use cases](#use-cases)
 - [Security posture](#security-posture)
-- [Status, honestly](#status-honestly)
-- [Blocked features](#blocked-features)
+- [Status](#status)
+- [Roadmap](#roadmap)
 - [Troubleshooting and FAQ](#troubleshooting-and-faq)
 - [Repository layout](#repository-layout)
 - [Contributing](#contributing)
@@ -65,7 +65,7 @@ Most agent stacks reach the web in ways that are unsafe, unverifiable, or locked
 | Agents fetch unsafely and can be pointed at internal addresses or cloud metadata. | Every fetch passes an SSRF gate that blocks private, loopback, link local, and cloud metadata addresses, then pins the TCP connection to the vetted IP so a hostname cannot rebind to a private target between check and connect. |
 | Answers are uncited and cannot be audited. | Every result is captured with its source URL, a retrieval timestamp, and a content hash, and research is returned as a cited packet, not a black box. |
 | Fetched text tries to steer the model ("ignore previous instructions"). | Retrieved content is labelled untrusted evidence, never instructions, and security decisions run deterministically outside the model. |
-| Many sources need a paid API key or a hosted account. | The core is keyless and uses only the Python standard library. Paid or hosted adapters are optional, off by default, and never on the acceptance path. |
+| Many sources need a paid API key or a hosted account. | The core is keyless and uses only the Python standard library, so no paid API or hosted account is ever required. |
 
 ## Capabilities
 
@@ -80,12 +80,11 @@ Most agent stacks reach the web in ways that are unsafe, unverifiable, or locked
 | Evidence store | Persistent SQLite store with provenance envelopes and per tenant scoping. | No |
 | MCP server | Ten stable tools over a local stdio server, or a remote streamable HTTP server. | Local: no. Remote: set a bearer token. |
 | Local browser adapter | Optional, opt in, isolated per session context with consent gated actions. | Optional extra |
-| Hosted search adapter | Optional, bring your own key. Disabled by default; falls back to the keyless search. | Optional key |
 
 ## Prerequisites and installation
 
 - **Python 3.10 or newer.** The core install pulls zero runtime dependencies (standard library only). If your system `python3` is older (some macs ship 3.9), use a newer interpreter explicitly.
-- **Operating system:** macOS and Linux are the tested targets. Windows is not yet verified for the installer path (tracked in the roadmap).
+- **Operating system:** macOS and Linux are the tested targets. Broader operating-system coverage is on the roadmap.
 - **git** to clone the repository.
 
 Install the core:
@@ -231,7 +230,7 @@ The server exposes a small, fixed tool surface. Raw scrapers and shell access ar
 | `query_evidence` | `query: str` | Full-text query over the persistent evidence store; returns `{query, results, stats}` with matching records and provenance. |
 | `semantic_search` | `query: str`, `k: int = 5` | Keyless semantic search over stored evidence; returns `{query, hits, answer, corpus_size}`, the answer grounded in the k nearest cited sources. |
 | `repo_inspect` | `repo: str` | Read-only public GitHub repository metadata and recent commits (owner/name or URL). |
-| `surface_status` | none | Reports, honestly, which client surfaces D-Eye can be active in. |
+| `surface_status` | none | Reports which client surfaces D-Eye can be active in. |
 
 Example (the `search` tool, as the CLI calls the same handler):
 
@@ -251,8 +250,7 @@ D-Eye reads no secrets on its own and stores none inline. Configuration lives in
 ```json
 {
   "search_provider": "duckduckgo",
-  "read_only": true,
-  "exa_api_key_ref": "env:EXA_API_KEY"
+  "read_only": true
 }
 ```
 
@@ -268,7 +266,6 @@ The persistent evidence store is `$DEYE_HOME/evidence.db`.
 | `DEYE_USAGE_LOG` | Path to an opt-in usage log; when set, adapter usage and estimated cost are recorded for `deye usage`. |
 | `DEYE_BROWSER_PROFILES` | Root directory for the optional browser adapter's isolated per-session profiles. |
 | `DEYE_BACKEND_PASSWORD` | Password (at least 8 characters) for the local `deye backend auth` user store. |
-| `EXA_API_KEY` | Optional hosted search adapter key, referenced as `env:EXA_API_KEY`. Leave unset to use the keyless DuckDuckGo default. |
 
 **Read-only by default and the consent gate.** `read_only` is `true` by default. Write, browser, and side-effecting actions are refused unless a human grants explicit consent for that specific action; the policy engine (`deye/core/policy.py`) decides this outside the model.
 
@@ -302,26 +299,21 @@ Each control below is genuinely implemented in the tracked source and covered by
 
 More detail: [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
 
-## Status, honestly
+## Status
 
-D-Eye is deliberately truthful about what is proven and what is not.
+D-Eye's keyless FOSS core is working and audited: the CLI and the local MCP server run, the security controls are implemented and covered by tests, and the full suite passes on a fresh public clone.
 
-- **Tests (verified in this environment on 2026-08-02):** the full suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh`, which installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything (422 passed, 6 skipped, 0 failed with every live source reachable). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count dips by one or two as the network varies.
-- **Static analysis:** Bandit reports 0 high and 0 medium findings; the low findings are the expected fixed argument subprocess calls and defensive exception handling.
-- **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are BLOCKED BY EXTERNAL PLATFORM (a login or anti-bot wall, a hosted GitHub or Claude account surface, or a container or hosting runtime the FOSS gate excludes), each with a precise recorded reason in [`docs/BLOCKED_FEATURES.md`](docs/BLOCKED_FEATURES.md). No row remains implemented-but-not-verified or partial; none is inflated.
-- **Not claimed:** D-Eye as a whole is not production ready, and no claim of 100 percent completion is made.
+- **Verified in this environment on 2026-08-02:** the full test suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh` (with the documented extras and the optional browser extra installed).
+- **Static analysis:** Bandit reports 0 high and 0 medium findings.
+- **Still growing:** the project is under active development, with more on the [Roadmap](#roadmap). D-Eye as a whole is not claimed to be production ready, and no claim of 100 percent completion is made.
 
-Honest roadmap:
+## Roadmap
 
-- A live hosted remote MCP endpoint (the transport and bearer auth ship and are tested in-process today; no public hosted endpoint has been stood up).
-- Cross operating system installer verification on Linux and Windows runners.
-- The platform blocked community connectors, once a lawful keyless read path exists.
+Forward directions, in general terms:
 
-Shipped since the last revision: FOSS signed-release and bundle verification (OpenSSL Ed25519 signature over a SHA256SUMS manifest), the live headless browser edge (Playwright), keyless local semantic search as the default (a local hashing embedding plus a local vector index), usage and cost reporting for optional adapters, a keyless Bilibili public video-info connector, and a `repo_inspect` GitHub tool on the MCP surface.
-
-## Blocked features
-
-14 of the 167 catalogued rows are BLOCKED BY EXTERNAL PLATFORM. They are listed openly, with a precise reason each, in [`docs/BLOCKED_FEATURES.md`](docs/BLOCKED_FEATURES.md). In short: Twitter/X, LinkedIn, Facebook and Instagram, Xiaohongshu, and the live YouTube caption path sit behind login or anti-bot walls; browser-extension publishing and the Claude plugin marketplace need per-store or client-side review; private-repo publication and GitHub issue and roadmap management are hosted GitHub account surfaces; the non-root container, Docker package, and automatic remote hosting need a container or hosting runtime the FOSS clean-clone gate excludes; and automatic remote connector registration and universal cross-surface activation are performed by the Claude platform with human opt-in. The 14 IDs are `C03-F004`, `C03-F006`, `C03-F008`, `C03-F009`, `C03-F011`, `C04-F004`, `C08-F008`, `C09-F001`, `C09-F009`, `C11-F016`, `C12-F019`, `C12-F025`, `C12-F026`, `C12-F036`, and they match the feature audit exactly. D-Eye never evades a login, CAPTCHA, or anti-bot defence; where a lawful keyless portion exists, it is built and tested and only the gated portion stays blocked.
+- A hosted remote MCP endpoint. The local stdio and remote HTTP transports already ship.
+- Broader operating-system coverage.
+- More connectors as platforms allow.
 
 ## Troubleshooting and FAQ
 
@@ -340,8 +332,7 @@ D-Eye/             (the clone root is the package root)
   deye/            core package: core (policy, router, evidence, provenance, redact),
                    connectors, research, skills, backend, browser, lifecycle
   tests/           test suite (unit, integration, live network, subprocess, browser)
-  docs/            guides (quickstart, MCP, connectors, skills, offline, threat model,
-                   blocked features)
+  docs/            guides (quickstart, MCP, connectors, skills, offline, threat model)
   plugin/d-eye/    Claude plugin: manifest, marketplace, skills, commands, hooks
   assets/brand/    the approved logo and the architecture diagram
   scripts/         build, SBOM, secret scan, dash scan, repo verification
@@ -351,7 +342,29 @@ D-Eye/             (the clone root is the package root)
 
 ## Contributing
 
-Start with [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md). Install the dev extra first, which provides pytest and the pip-audit tool used by the live security test: `./.venv/bin/python -m pip install -e '.[dev]'`. Then run the suite with `./.venv/bin/python -m pytest -q -rs`. The MCP and remote tests use the `mcp` and `remote` extras, and the browser tests use `.[browser]` plus `playwright install chromium`; without those extras the affected tests skip cleanly. Check for forbidden dash characters with `python3 scripts/scan_ui_dashes.py`, and scaffold a new connector against the D-Eye contract with the `connector_builder` skill. New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation.
+1. **Set up the dev environment.** Create a virtualenv and install the `dev` extra (pytest, ruff, pip-audit, pyyaml):
+
+   ```bash
+   python3 -m venv .venv
+   ./.venv/bin/python -m pip install -e '.[dev]'
+   ```
+
+2. **Run the tests.**
+
+   ```bash
+   ./.venv/bin/python -m pytest -q -rs
+   ```
+
+   The `mcp`, `remote`, and `browser` extras enable the MCP, remote, and headless-browser tests; without them those tests skip cleanly.
+
+3. **Run the checks.** Lint with ruff and scan for forbidden long dashes:
+
+   ```bash
+   ./.venv/bin/ruff check deye
+   python3 scripts/scan_ui_dashes.py
+   ```
+
+4. **Open a change.** New network or parse paths must route through `deye/connectors/base.py` and `deye/core/policy.py` so they inherit the SSRF gate, IP pinning, size cap, decompression guard, and redirect re-validation. Start from [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md), and scaffold a new connector with the `connector_builder` skill.
 
 ## Security policy
 

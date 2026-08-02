@@ -21,8 +21,8 @@ Design inspiration and patterns studied (not vendored):
   * OpenCLI -- Apache-2.0 (referenced as an optional, user-controlled browser
                edge connector; not implemented in this vertical slice.)
 
-Optional hosted adapters (Exa, Firebase/Genkit) are referenced as OPTIONAL
-integrations only and are never required by the D-Eye core.
+Any optional hosted adapters are OPTIONAL integrations only and are never
+required by the D-Eye core, which is keyless and FOSS-first by default.
 
 SECURITY NOTE: the supplied mcpmarket plugin archive contained a live-looking
 bearer token in its .mcp.json. That value was treated as compromised, is NOT

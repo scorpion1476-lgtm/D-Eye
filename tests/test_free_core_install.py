@@ -43,7 +43,7 @@ def test_no_paid_api_env_var_required_at_import():
     """Importing every non-optional D-Eye module must succeed without
     any paid-API env var being set."""
     forbidden_envs = [
-        "EXA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
         "GOOGLE_API_KEY", "BING_API_KEY", "SERPER_API_KEY",
         "PINECONE_API_KEY", "WEAVIATE_API_KEY",
     ]

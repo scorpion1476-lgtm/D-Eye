@@ -20,7 +20,7 @@
 > `THIRD_PARTY_NOTICES.md` only.
 
 **Baseline:** v0.2.0-validated · **Working branch:** feature/phase-a-foundation
-**Last updated:** 2026-07-28 (Phase A: evidence graph, GitHub + Exa connectors, security CI)
+**Last updated:** 2026-07-28 (Phase A: evidence graph, GitHub connector, security CI)
 **Method:** source inspection + real test execution + live GitHub read. No status is taken from the README on trust.
 
 Statuses (exact wording): PRODUCTION READY · IMPLEMENTED BUT NOT FULLY VERIFIED · PARTIAL · NOT IMPLEMENTED · BLOCKED BY EXTERNAL PLATFORM · NOT APPLICABLE.
@@ -89,6 +89,6 @@ Local CLI + local stdio MCP + remote HTTP MCP + config helpers exist (PARTIAL). 
 
 ## Automatable from here vs blocked
 
-**Done here (built + tested, pushed to GitHub):** evidence graph + contradiction detection, GitHub research connector, real Exa adapter with keyless fallback, XXE guard, SBOM generator, bandit-clean SAST, CI + Security workflows, updated docs.
+**Done here (built + tested, pushed to GitHub):** evidence graph + contradiction detection, GitHub research connector, keyless FOSS web search, XXE guard, SBOM generator, bandit-clean SAST, CI + Security workflows, updated docs.
 
 **BLOCKED BY EXTERNAL PLATFORM (needs your machine / hosting / Claude client):** macOS/Windows installer proof, Desktop-Commander automation, Docker deploy proof, live Claude Desktop/web/Projects/Cowork activation, and remote connector registration.

@@ -184,7 +184,6 @@ def cmd_setup(args, cfg: Config) -> int:
         config_path.write_text(json.dumps({
             "search_provider": cfg.search_provider,
             "read_only": True,
-            "exa_api_key_ref": cfg.exa_api_key_ref,
         }, indent=2))
     _print({"message": "D-Eye set up (read-only, no credentials stored)",
             "home": str(home), "config": str(config_path)})

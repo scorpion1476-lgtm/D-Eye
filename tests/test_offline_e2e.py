@@ -75,7 +75,7 @@ def test_offline_registry_enumerates_all_connectors():
     names = {m.name for m in reg.manifests}
     # every connector we ship must be enumerable offline
     assert names >= {
-        "search_duckduckgo", "search_exa",
+        "search_duckduckgo",
         "web_fetch", "rss", "github_repo",
         "reddit_search", "reddit_fetch",
         "v2ex_feed", "v2ex_fetch",

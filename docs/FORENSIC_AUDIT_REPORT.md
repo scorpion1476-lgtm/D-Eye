@@ -48,7 +48,7 @@ in `docs/LICENSE_INVENTORY.md`. D-Eye core has **zero third-party runtime deps**
 | D3 | SSRF resolved DNS then let urllib re-resolve (TOCTOU/rebinding gap) | Connection-level IP pinning; SNI/cert still validated; live-tested |
 | D4 | No decompression-bomb protection | gzip/deflate decompressed-size cap added + tested |
 | D5 | Plugin `.mcp.json` used `python` + `${DEYE_HOME:-~/.deye}` JSON shell-expansion (unsupported) | `python3 -m deye.mcp_server`; expansion removed; pip-first documented |
-| D6 | Exa adapter status ambiguous | Explicitly reported UNIMPLEMENTED optional integration |
+| D6 | Optional hosted-search adapter status ambiguous | Adapter removed; keyless FOSS search is the sole default |
 | D7 | Compat matrix could be read as "hook = global activation" | Corrected: hook is a local health check; local stdio unreachable from web |
 
 ## 4. Validation performed

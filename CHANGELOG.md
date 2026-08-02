@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+Removed
+- Removed the optional hosted search adapter and its API key / config reference
+  from the code, packaging, configuration, and docs. The keyless FOSS web search
+  stays the default, and the local semantic and neural search are unaffected.
+
 ## 0.3.0-dev (unreleased) - Phase B: security hardening & supply chain (2026-07-29)
 Security
 - Credential redaction: `redact_mapping` now redacts by credential *header key*
@@ -30,10 +36,6 @@ Added
 - Read-only GitHub research connector (`deye/connectors/github_repo.py`,
   `deye repo`, capability `repo.inspect`) using the public REST API through the
   existing SSRF-guarded, connection-pinned fetch path.
-- Real Exa adapter (`ExaSearch` in `deye/connectors/web_search.py`):
-  authenticated POST, contents + highlights, domain include/exclude, date
-  filters, find-similar and answer modes, cost reporting, and keyless fallback
-  when no `EXA_API_KEY` is configured. Not yet verified against the live Exa API.
 - `safe_post` in `deye/connectors/base.py`: policy-gated, connection-pinned POST
   (single-hop; refuses to follow redirects) reusing the decompression caps.
 - SBOM generator (`scripts/gen_sbom.py`): CycloneDX 1.5 JSON, declared and
@@ -48,7 +50,7 @@ Security
 
 Tests
 - Phase A introduced 62 passed / 1 skipped (core) and these new suites:
-  `test_graph.py`, `test_github_connector.py`, `test_exa_adapter.py`,
+  `test_graph.py`, `test_github_connector.py`,
   `test_rss_guard.py`. Superseded by the Phase B totals above
   (**69 passed / 1 skipped** core; **73 passed / 0 skipped** with MCP extras).
 
@@ -76,7 +78,6 @@ Security
 Changed / corrected
 - Plugin `.mcp.json` uses `python3 -m deye.mcp_server` and drops fragile JSON
   shell-expansion of `DEYE_HOME` (client-unsupported).
-- Exa adapter is now explicitly reported as UNIMPLEMENTED optional integration.
 - Docker relabelled: separate local-stdio image vs remote-http service; the
   compatibility matrix no longer implies stdio Docker serves Claude web.
 - Added `SECURITY.md`, `.gitignore`, `CHANGELOG.md`, remote-deployment guide.

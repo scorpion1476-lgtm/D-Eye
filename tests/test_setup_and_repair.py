@@ -18,11 +18,9 @@ def test_setup_creates_a_read_only_config_with_no_live_secret(tmp_path, monkeypa
     assert cfg.exists(), "setup must create config.json under DEYE_HOME"
     data = json.loads(cfg.read_text())
     assert data["read_only"] is True
-    # No live secret is persisted: the optional adapter key is stored only as
-    # a reference (env:/keychain:) resolved at use time, never a raw value.
-    ref = data.get("exa_api_key_ref") or ""
-    assert ref == "" or ref.startswith(("env:", "keychain:")), (
-        f"config stored something that is not a secret reference: {ref!r}")
+    # No live secret is persisted: setup writes only non-secret config keys.
+    assert set(data.keys()) <= {"search_provider", "read_only"}, (
+        f"setup wrote unexpected config keys: {sorted(data.keys())}")
     # Idempotent: a second run does not error or clobber.
     assert main(["setup"]) == 0
     assert json.loads(cfg.read_text())["read_only"] is True

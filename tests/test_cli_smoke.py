@@ -11,7 +11,7 @@ def test_capabilities(capsys):
 def test_connectors(capsys):
     assert main(["connectors"]) == 0
     out = capsys.readouterr().out
-    assert "web_fetch" in out and "search_exa" in out
+    assert "web_fetch" in out and "search_duckduckgo" in out
 
 def test_doctor_surfaces(capsys):
     assert main(["doctor", "--surfaces"]) == 0

@@ -16,7 +16,7 @@
 **Date:** 2026-07-28 · **Baseline:** v0.2.0-validated · **Branch:** feature/phase-a-foundation
 
 ## Scope of this report
-This covers Phase A of the production-gap programme: evidence graph + contradiction detection, GitHub research connector, real Exa adapter, and the SBOM/SAST/dependency/secret-scan CI foundation. It records only what was executed and verified in this session.
+This covers Phase A of the production-gap programme: evidence graph + contradiction detection, GitHub research connector, and the SBOM/SAST/dependency/secret-scan CI foundation. It records only what was executed and verified in this session.
 
 ## What changed and its verified state
 
@@ -24,7 +24,6 @@ This covers Phase A of the production-gap programme: evidence graph + contradict
 |---|---|---|
 | Evidence graph + contradiction detection | IMPLEMENTED BUT NOT FULLY VERIFIED | 5 unit tests pass; polarity + numeric heuristics; precision/recall on real corpora not measured |
 | GitHub research connector (read-only) | IMPLEMENTED BUT NOT FULLY VERIFIED | 4 unit tests pass; live call to `api.github.com` succeeded through the SSRF-guarded path; rate-limit handled gracefully |
-| Exa adapter (auth POST, contents, filters, cost, fallback) | IMPLEMENTED BUT NOT FULLY VERIFIED | 4 unit tests pass incl. keyless fallback; not run against the live Exa API (no key here) |
 | XXE / entity guard on RSS/Atom | PRODUCTION READY (module-level) | DOCTYPE rejection test + normal-feed test pass; bandit MEDIUM cleared |
 | SBOM generator | IMPLEMENTED BUT NOT FULLY VERIFIED | runs; emits CycloneDX 1.5 JSON (declared + installed modes) |
 | Bandit SAST | PASS | 0 issues across all severities |
@@ -40,4 +39,3 @@ Nothing above is marked `PRODUCTION READY` at the platform level, because the st
 ## Recommended next actions
 1. Let the pushed CI + Security workflows run once on GitHub Actions and confirm a green result; then this section can move those items forward.
 2. On your Mac (with Desktop Commander), run `scripts/install.sh` and `deye init-claude` to validate local installation and Claude Desktop registration.
-3. Provide an `EXA_API_KEY` (as an environment reference, never inline) if you want the Exa adapter verified against the live API.

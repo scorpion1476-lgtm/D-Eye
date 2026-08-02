@@ -1,8 +1,8 @@
 """Configuration + secret-reference resolution.
 
 Secrets are NEVER stored inline. Config holds *references* like
-``env:EXA_API_KEY`` or ``keychain:deye/exa``; the value is resolved at execution
-time and never persisted, logged, or handed to the model.
+``env:MY_API_KEY`` or ``keychain:service/account``; the value is resolved at
+execution time and never persisted, logged, or handed to the model.
 """
 from __future__ import annotations
 
@@ -56,7 +56,6 @@ class Config:
     limits: Limits = field(default_factory=Limits)
     # provider/adapter secret *references* only:
     search_provider: str = "duckduckgo"  # FOSS-first default, no key required
-    exa_api_key_ref: str = "env:EXA_API_KEY"
     read_only: bool = True
 
     def ensure_home(self) -> Path:
@@ -82,5 +81,4 @@ class Config:
             data = json.loads(path.read_text())
             cfg.search_provider = data.get("search_provider", cfg.search_provider)
             cfg.read_only = data.get("read_only", cfg.read_only)
-            cfg.exa_api_key_ref = data.get("exa_api_key_ref", cfg.exa_api_key_ref)
         return cfg

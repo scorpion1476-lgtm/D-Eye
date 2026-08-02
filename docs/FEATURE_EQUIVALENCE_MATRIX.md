@@ -32,8 +32,8 @@ through the router - no code path bypasses it.
   reddit,v2ex,youtube,xueqiu,xiaoyuzhou}.py`.
 - Lawful-boundary stubs: `deye/connectors/social_stub.py` (six
   platforms with no lawful keyless read path).
-- Optional keyed adapter: an Exa-style adapter in the tree; off by
-  default; never on the acceptance path.
+- Keyed search adapter: none ships; the keyless FOSS search is the
+  default and the only search connector.
 - Tests: `test_new_connectors.py, test_new_connectors_batch2.py,
   test_github_connector.py, test_rss_guard.py`.
 - Live smoke: `tests/test_live_network_integration.py` (skips

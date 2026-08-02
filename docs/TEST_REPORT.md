@@ -38,5 +38,4 @@ The single skip in the core run is `tests/test_remote_auth.py`, which imports th
 ## New tests added (Phase A)
 - `tests/test_graph.py` - polarity + numeric contradiction detection, same-source suppression, export serialisation (5).
 - `tests/test_github_connector.py` - slug/URL parsing, envelope build, not-found handling (4).
-- `tests/test_exa_adapter.py` - keyless fallback, authenticated request build, answer mode (4).
 - `tests/test_rss_guard.py` - DOCTYPE rejection (billion-laughs) + normal-feed parse (2).

@@ -6,13 +6,5 @@
   "license": "MIT",
   "keywords": ["mcp", "search", "research", "evidence", "provenance", "foss"],
   "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
-  "userConfig": {
-    "exa_api_key": {
-      "title": "Exa API key (optional)",
-      "description": "Optional hosted search adapter. Leave blank to use the keyless FOSS default.",
-      "type": "string",
-      "sensitive": true
-    }
-  }
+  "mcpServers": "./.mcp.json"
 }

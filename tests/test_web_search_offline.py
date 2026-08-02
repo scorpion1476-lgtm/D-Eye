@@ -87,13 +87,15 @@ def test_c03_f001_empty_html_yields_no_results_but_no_error(fake_safe_get):
     assert "no results parsed" in env.content
 
 
-def test_c03_f001_manifest_is_keyless_and_preferred_over_paid_adapter():
+def test_c03_f001_search_manifest_is_keyless_and_free():
     ms = web_search.manifests()
+    search = [m for m in ms if m.capability == "search"]
+    assert search, "a search manifest must be registered"
     ddg = next(m for m in ms if m.name == "search_duckduckgo")
-    exa = next(m for m in ms if m.name == "search_exa")
+    # The FOSS-first default requires no credentials and is free.
     assert ddg.requires_credentials is False
     assert ddg.cost == "free"
-    # Lower preference number wins in the registry.
-    assert ddg.preference < exa.preference, (
-        "keyless FOSS default must beat the optional paid adapter"
+    # No credentialed search adapter is registered by default.
+    assert all(m.requires_credentials is False for m in search), (
+        "the default search surface must be keyless"
     )

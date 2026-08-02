@@ -31,7 +31,6 @@ can register it.
 | `youtube_fetch` / `youtube_channel_feed` | fetch / feed | yes | MIT | oEmbed + channel RSS; no free search. |
 | `xueqiu_fetch` | fetch | yes | MIT | Public symbol page (rate-limited). |
 | `xiaoyuzhou_fetch` | fetch | yes | MIT | Public episode page. |
-| `search_exa` | search | requires key | proprietary adapter | Off by default; keyless fallback via `search_duckduckgo`. |
 
 ## Platform boundaries (lawful-only stubs)
 

@@ -52,15 +52,6 @@ Highlights:
 Full installed-tree licence report: run `python3 scripts/scan_licences.py`.
 Full SBOM: `repository/deye/sbom.json` (CycloneDX).
 
-## Third-party services referenced by optional adapters (not required)
-
-Optional adapters may consume the following external services. None are
-required by the D-Eye core, no key or account is needed to install or
-operate D-Eye, and each adapter is off by default.
-
-- Exa (paid search API) — optional adapter kept in the code tree so an
-  operator with a key can use it; kept off the acceptance-test path.
-
 ## Icon assets
 
 The D-Eye icon assets under `assets/brand/` are the approved D-Eye brand

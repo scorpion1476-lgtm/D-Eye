@@ -80,7 +80,6 @@ def test_portable_config_roundtrip(tmp_path, monkeypatch):
     (tmp_path / "config.json").write_text(json.dumps({
         "search_provider": "duckduckgo",
         "read_only": True,
-        "exa_api_key_ref": "env:EXA_API_KEY",
         "an_unknown_key": "should be dropped on import",
     }))
     export_path = tmp_path / "portable.json"

@@ -229,7 +229,7 @@ def portable_config_import(src: Path, *, home: Path | None = None) -> dict:
     current: dict = {}
     if target.exists():
         current = json.loads(target.read_text())
-    known_keys = {"search_provider", "read_only", "exa_api_key_ref"}
+    known_keys = {"search_provider", "read_only"}
     merged = dict(current)
     for k in known_keys & incoming.keys():
         merged[k] = incoming[k]

@@ -22,28 +22,28 @@ def test_report_counts_costs_and_rate():
     t = 1000.0
     m.record("ddg", capability="search", cost_class="free", ok=True, nbytes=100, ts=t)
     m.record("ddg", capability="search", cost_class="free", ok=True, nbytes=100, ts=t + 30)
-    m.record("exa", capability="search", cost_class="paid", ok=True, nbytes=50, ts=t + 60)
-    m.record("exa", capability="search", cost_class="paid", ok=False, nbytes=0, ts=t + 120)
+    m.record("paidsearch", capability="search", cost_class="paid", ok=True, nbytes=50, ts=t + 60)
+    m.record("paidsearch", capability="search", cost_class="paid", ok=False, nbytes=0, ts=t + 120)
     rep = m.report()
     by = {a["connector"]: a for a in rep["adapters"]}
     assert by["ddg"]["calls"] == 2 and by["ddg"]["est_cost"] == 0.0
-    assert by["exa"]["calls"] == 2 and by["exa"]["ok"] == 1 and by["exa"]["errors"] == 1
-    assert by["exa"]["est_cost"] > 0.0                       # paid adapter costs
+    assert by["paidsearch"]["calls"] == 2 and by["paidsearch"]["ok"] == 1 and by["paidsearch"]["errors"] == 1
+    assert by["paidsearch"]["est_cost"] > 0.0                       # paid adapter costs
     assert by["ddg"]["calls_per_min"] == 4.0                 # 2 calls over 0.5 min
-    assert rep["paid_adapters"] == ["exa"]
+    assert rep["paid_adapters"] == ["paidsearch"]
     assert rep["total_calls"] == 4
 
 
 def test_log_persistence_roundtrip(tmp_path):
     log = tmp_path / "usage.jsonl"
     m = UsageMeter(log_path=log)
-    m.record("exa", capability="search", cost_class="paid", ok=True, nbytes=10, ts=5.0)
+    m.record("paidsearch", capability="search", cost_class="paid", ok=True, nbytes=10, ts=5.0)
     # a fresh meter reads the same history back from disk
     again = UsageMeter.from_log(log)
     assert len(again.records) == 1
-    assert again.report()["paid_adapters"] == ["exa"]
+    assert again.report()["paid_adapters"] == ["paidsearch"]
     # persisted lines are valid JSON
-    assert json.loads(log.read_text().splitlines()[0])["connector"] == "exa"
+    assert json.loads(log.read_text().splitlines()[0])["connector"] == "paidsearch"
 
 
 # -- router wiring ----------------------------------------------------------
@@ -99,9 +99,9 @@ def test_deye_usage_reports_from_log(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("DEYE_HOME", str(tmp_path))
     (tmp_path).mkdir(parents=True, exist_ok=True)
     UsageMeter(log_path=tmp_path / "usage.jsonl").record(
-        "exa", capability="search", cost_class="paid", ok=True, nbytes=10, ts=1.0)
+        "paidsearch", capability="search", cost_class="paid", ok=True, nbytes=10, ts=1.0)
     from deye.cli import main
     rc = main(["usage"])
     out = capsys.readouterr().out
     assert rc == 0
-    assert "paid_adapters" in out and "exa" in out
+    assert "paid_adapters" in out and "paidsearch" in out
