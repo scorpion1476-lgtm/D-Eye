@@ -7,6 +7,7 @@ def test_capability_list():
     expected = {
         "capability_list", "connector_health", "search", "fetch",
         "extract", "query_evidence", "export_research_packet", "surface_status",
+        "semantic_search", "repo_inspect",
     }
     assert set(TOOLS) == expected
     assert out["tools"] == TOOLS

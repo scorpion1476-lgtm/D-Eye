@@ -5,7 +5,10 @@
 
 from __future__ import annotations
 
+import os
+
 from deye.connectors import (
+    bilibili,
     github_repo,
     reddit,
     rss,
@@ -44,6 +47,8 @@ def build_registry(config: Config | None = None) -> Registry:
         reg.register(m)
     for m in xiaoyuzhou.manifests(config):
         reg.register(m)
+    for m in bilibili.manifests(config):
+        reg.register(m)
     for m in social_stub.manifests(config):
         reg.register(m)
     return reg
@@ -52,7 +57,12 @@ def build_registry(config: Config | None = None) -> Registry:
 def build_router(config: Config | None = None, *, allow_write: bool = False) -> Router:
     config = config or Config()
     consent = ConsentPolicy(allow_write=allow_write)
-    return Router(registry=build_registry(config), consent=consent)
+    meter = None
+    # Usage metering is opt-in (off by default) so the core has no side effects.
+    if os.environ.get("DEYE_USAGE_LOG"):
+        from deye.backend.usage import UsageMeter
+        meter = UsageMeter(log_path=config.home / "usage.jsonl")
+    return Router(registry=build_registry(config), consent=consent, meter=meter)
 
 
 def search(router: Router, query: str) -> Envelope:
@@ -101,6 +111,11 @@ def inspect_repo(router: Router, repo: str) -> Envelope:
     return router.route("repo.inspect", {"repo": repo})
 
 
+def bilibili_info(router: Router, ref: str) -> Envelope:
+    """Fetch a Bilibili video's public info via the keyless view API."""
+    return router.route("video.info", {"url": ref})
+
+
 def youtube_transcript(router: Router, url: str, *, lang: str = "") -> Envelope:
     """Fetch a YouTube video's public captions via the keyless timedtext path."""
     request = {"url": url}
@@ -133,3 +148,27 @@ def query_evidence(query: str, *, config: Config | None = None, limit: int = 20)
     config = config or Config()
     store = EvidenceStore(config.evidence_db)
     return {"query": query, "results": store.query(query, limit=limit), "stats": store.stats()}
+
+
+def semantic_answer(query: str, *, config: Config | None = None,
+                    k: int = 5, limit: int = 200) -> dict:
+    """Keyless semantic search over stored evidence, returning a cited answer.
+
+    Pulls recent evidence rows, ranks them by local-embedding cosine similarity
+    (no key, no network), and composes a grounded extractive answer whose
+    snippets are each cited with their source URL.
+    """
+    from deye.research import semantic_answer as _semantic_answer
+    from deye.research import semantic_search as _semantic_search
+
+    config = config or Config()
+    rows = EvidenceStore(config.evidence_db).query("", limit=limit)
+    hits = _semantic_search(rows, query, k=k)
+    answer = _semantic_answer(rows, query, k=k)
+    return {
+        "query": query,
+        "hits": [{"url": h.get("url"), "title": h.get("title"),
+                  "semantic_score": h.get("semantic_score")} for h in hits],
+        "answer": answer.to_dict(),
+        "corpus_size": len(rows),
+    }

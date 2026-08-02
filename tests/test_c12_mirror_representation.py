@@ -197,7 +197,7 @@ def test_c12_f028_youtube_and_lawful_social_connectors_registered():
 def test_c12_f028_blocked_platforms_registered_as_missing_stubs():
     from deye.connectors import social_stub
     for platform in ("twitter_x", "linkedin", "facebook", "instagram",
-                     "bilibili", "xiaohongshu"):
+                     "bilibili_search", "xiaohongshu"):
         assert platform in social_stub.PLATFORM_BOUNDARIES
 
 

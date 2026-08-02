@@ -87,12 +87,47 @@ def cmd_evidence(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_usage(args, cfg: Config) -> int:
+    """Report per-adapter usage, estimated cost, and call rate.
+
+    Reads the opt-in usage log (written when DEYE_USAGE_LOG is set) under
+    DEYE_HOME. Local FOSS connectors are free; paid adapters show an estimate.
+    """
+    from deye.backend.usage import UsageMeter
+    meter = UsageMeter.from_log(cfg.home / "usage.jsonl")
+    _print(meter.report())
+    return 0
+
+
+def cmd_semantic(args, cfg: Config) -> int:
+    from deye.app import semantic_answer
+    result = semantic_answer(args.query, config=cfg, k=args.k)
+    _print({"query": result["query"], "corpus_size": result["corpus_size"],
+            "hits": result["hits"]})
+    print("---")
+    _print(result["answer"]["answer"])
+    return 0
+
+
 def cmd_repo(args, cfg: Config) -> int:
     from deye.app import inspect_repo
     env = inspect_repo(build_router(cfg), args.repo)
     _print({"repo": args.repo, "warnings": env.warnings})
     print("---")
     _print(env.content)
+    return 0
+
+
+def cmd_bilibili(args, cfg: Config) -> int:
+    from deye.app import bilibili_info
+    env = bilibili_info(build_router(cfg), args.ref)
+    art = env.artifacts[0] if env.artifacts else {}
+    _print({"available": art.get("available"), "bvid": art.get("bvid"),
+            "title": art.get("title"), "owner": art.get("owner"),
+            "views": art.get("views"), "url": art.get("url"),
+            "warnings": env.warnings})
+    print("---")
+    _print(env.content[:4000])
     return 0
 
 
@@ -172,6 +207,32 @@ def cmd_init_claude(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_release(args, cfg: Config) -> int:
+    """`deye release <verb>`: manifest / keygen / sign / verify a bundle."""
+    from pathlib import Path as _P
+
+    from deye import release
+    verb = args.verb
+    if verb == "manifest":
+        out = release.write_manifest(_P(args.bundle))
+        _print({"manifest": str(out)}); return 0
+    if verb == "keygen":
+        priv, pub = release.generate_keypair(_P(args.dest))
+        _print({"private_key": str(priv), "public_key": str(pub)}); return 0
+    if verb == "sign":
+        release.write_manifest(_P(args.bundle))
+        sig = release.sign_manifest(_P(args.bundle), _P(args.key),
+                                    public_key=_P(args.public) if args.public else None)
+        _print({"signed": str(sig)}); return 0
+    if verb == "verify":
+        result = release.verify_bundle(_P(args.bundle),
+                                       public_key=_P(args.public) if args.public else None)
+        _print(result)
+        return 0 if result["ok"] else 1
+    _print({"error": f"unknown release verb: {verb}"})
+    return 1
+
+
 def cmd_lifecycle(args, cfg: Config) -> int:
     """Dispatch to `deye lifecycle <verb>` subcommands (env, extras, repair, status, backup, restore, portable-export, portable-import, check-update, apply-update, rollback, uninstall)."""
     from pathlib import Path as _P
@@ -235,8 +296,17 @@ def build_parser() -> argparse.ArgumentParser:
     e = sub.add_parser("evidence", help="query the persistent evidence store")
     e.add_argument("query")
 
+    se = sub.add_parser("semantic", help="keyless semantic search over stored evidence (cited answer)")
+    se.add_argument("query")
+    se.add_argument("--k", type=int, default=5, help="how many nearest sources to ground the answer in")
+
+    sub.add_parser("usage", help="report per-adapter usage, estimated cost, and call rate")
+
     rp = sub.add_parser("repo", help="inspect a public GitHub repository (read-only)")
     rp.add_argument("repo", help="owner/name or a github.com URL")
+
+    bl = sub.add_parser("bilibili", help="fetch a Bilibili video's public info (keyless view API)")
+    bl.add_argument("ref", help="a bilibili video URL, BV id, or av number")
 
     tr = sub.add_parser("transcript", help="fetch a YouTube video's public captions (keyless)")
     tr.add_argument("url", help="a YouTube watch URL, youtu.be link, or 11-char id")
@@ -255,6 +325,20 @@ def build_parser() -> argparse.ArgumentParser:
     h = sub.add_parser("serve-http", help="run the remote Streamable-HTTP MCP (needs DEYE_HTTP_TOKEN)")
     h.add_argument("--host", default="127.0.0.1")
     h.add_argument("--port", type=int, default=8080)
+
+    rel = sub.add_parser("release", help="sign / verify a release bundle (FOSS Ed25519 + SHA256SUMS)")
+    rel_sub = rel.add_subparsers(dest="verb", required=True)
+    rel_m = rel_sub.add_parser("manifest", help="write SHA256SUMS for a bundle dir")
+    rel_m.add_argument("bundle")
+    rel_k = rel_sub.add_parser("keygen", help="generate a local Ed25519 keypair")
+    rel_k.add_argument("dest")
+    rel_s = rel_sub.add_parser("sign", help="write SHA256SUMS and sign it with a private key")
+    rel_s.add_argument("bundle")
+    rel_s.add_argument("--key", required=True, help="Ed25519 private key path")
+    rel_s.add_argument("--public", default=None, help="public key to embed as PUBKEY.pem")
+    rel_v = rel_sub.add_parser("verify", help="verify bundle integrity (+ signature if present)")
+    rel_v.add_argument("bundle")
+    rel_v.add_argument("--public", default=None, help="public key (defaults to bundle PUBKEY.pem)")
 
     lc = sub.add_parser("lifecycle", help="setup / update / backup / rollback / uninstall / repair")
     lc_sub = lc.add_subparsers(dest="verb", required=True)
@@ -285,10 +369,11 @@ def build_parser() -> argparse.ArgumentParser:
 _DISPATCH = {
     "setup": cmd_setup, "status": cmd_status, "capabilities": cmd_capabilities,
     "connectors": cmd_connectors, "search": cmd_search, "fetch": cmd_fetch,
-    "research": cmd_research, "evidence": cmd_evidence, "serve-http": cmd_serve_http,
+    "research": cmd_research, "evidence": cmd_evidence, "semantic": cmd_semantic,
+    "usage": cmd_usage, "serve-http": cmd_serve_http,
     "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
     "transcript": cmd_transcript, "multi-search": cmd_multi_search,
-    "lifecycle": cmd_lifecycle,
+    "bilibili": cmd_bilibili, "release": cmd_release, "lifecycle": cmd_lifecycle,
 }
 
 

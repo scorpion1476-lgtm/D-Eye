@@ -28,6 +28,7 @@ from deye.surfaces import surface_status
 TOOLS = [
     "capability_list", "connector_health", "search", "fetch",
     "extract", "query_evidence", "export_research_packet", "surface_status",
+    "semantic_search", "repo_inspect",
 ]
 
 
@@ -59,6 +60,15 @@ def handle(tool: str, args: dict) -> dict:
     if tool == "query_evidence":
         from deye.app import query_evidence
         return query_evidence(args.get("query", ""))
+    if tool == "semantic_search":
+        from deye.app import semantic_answer
+        return semantic_answer(args["query"], k=int(args.get("k", 5)))
+    if tool == "repo_inspect":
+        from deye.app import inspect_repo
+        env = inspect_repo(_router(), args["repo"])
+        return {"repo": args["repo"], "title": env.source.title,
+                "url": env.source.url, "content": redact(env.content[:8000]),
+                "warnings": env.warnings}
     raise ValueError(f"unknown tool: {tool}")
 
 
@@ -108,6 +118,14 @@ def build_fastmcp():
     @server.tool()
     def surface_status() -> dict:
         return handle("surface_status", {})
+
+    @server.tool()
+    def semantic_search(query: str, k: int = 5) -> dict:
+        return handle("semantic_search", {"query": query, "k": k})
+
+    @server.tool()
+    def repo_inspect(repo: str) -> dict:
+        return handle("repo_inspect", {"repo": repo})
 
     return server
 

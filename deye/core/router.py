@@ -47,11 +47,20 @@ class RouterError(RuntimeError):
 class Router:
     registry: Registry
     consent: ConsentPolicy = field(default_factory=ConsentPolicy)
+    meter: object | None = None      # optional UsageMeter; off by default
     _breakers: dict[str, _Breaker] = field(default_factory=dict)
     audit: list[dict] = field(default_factory=list)
 
     def _breaker(self, name: str) -> _Breaker:
         return self._breakers.setdefault(name, _Breaker())
+
+    def _meter(self, manifest, *, ok: bool, env: Envelope | None) -> None:
+        if self.meter is None:
+            return
+        nbytes = len((env.content or "")) if env is not None else 0
+        self.meter.record(manifest.name, capability=manifest.capability,
+                          cost_class=manifest.cost, ok=ok, nbytes=nbytes,
+                          ts=time.time())
 
     def route(self, capability: str, request: dict) -> Envelope:
         candidates = self.registry.for_capability(capability)
@@ -82,6 +91,7 @@ class Router:
                 started = time.monotonic()
                 env = connector.run(request)
                 self._breaker(manifest.name).record(True)
+                self._meter(manifest, ok=True, env=env)
                 self.audit.append({
                     "connector": manifest.name,
                     "capability": capability,
@@ -91,6 +101,7 @@ class Router:
                 return env
             except Exception as exc:  # noqa: BLE001 -- deliberate: try next backend
                 self._breaker(manifest.name).record(False)
+                self._meter(manifest, ok=False, env=None)
                 # Redact before truncating so a credential in the error (e.g. a
                 # tokenized URL) can't leak into the audit trail.
                 self.audit.append({"connector": manifest.name, "ok": False,
@@ -126,10 +137,12 @@ class Router:
         try:
             env = connector.run(request)
             self._breaker(name).record(True)
+            self._meter(manifest, ok=True, env=env)
             self.audit.append({"connector": name, "capability": manifest.capability, "ok": True})
             return env
         except Exception as exc:  # noqa: BLE001 -- record redacted + re-raise
             self._breaker(name).record(False)
+            self._meter(manifest, ok=False, env=None)
             self.audit.append({"connector": name, "ok": False,
                                "error": redact(str(exc))[:200]})
             raise

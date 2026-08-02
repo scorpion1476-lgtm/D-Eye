@@ -42,10 +42,13 @@ PLATFORM_BOUNDARIES: dict[str, str] = {
         "token. Web scraping is rate-limited and against ToS. No lawful "
         "keyless read path."
     ),
-    "bilibili": (
-        "Bilibili does not expose a documented keyless public API for "
-        "general search. Anonymous scraping breaches their ToS. A community "
-        "reverse-engineered client could be shipped as an opt-in adapter."
+    "bilibili_search": (
+        "Bilibili's public video-info endpoint IS keyless and is implemented "
+        "in connectors/bilibili.py (video.info). Its free-text SEARCH endpoint, "
+        "by contrast, now requires a WBI (w_rid) request signature that exists "
+        "to deter automated clients; producing that signature to reach search "
+        "would circumvent an anti-bot control, which the build rules forbid. "
+        "Search therefore stays a documented boundary; video-info does not."
     ),
     "xiaohongshu": (
         "Xiaohongshu offers no documented public API. Web scraping breaches "

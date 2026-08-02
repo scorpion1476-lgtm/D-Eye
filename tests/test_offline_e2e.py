@@ -81,7 +81,7 @@ def test_offline_registry_enumerates_all_connectors():
         "v2ex_feed", "v2ex_fetch",
         "youtube_fetch", "youtube_channel_feed",
         "twitter_x", "linkedin", "facebook", "instagram",
-        "bilibili", "xiaohongshu",
+        "bilibili_search", "bilibili_video_info", "xiaohongshu",
     }
     assert reg.capabilities()
 

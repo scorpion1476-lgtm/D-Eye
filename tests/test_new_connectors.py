@@ -183,7 +183,7 @@ def test_social_stubs_report_missing_and_carry_reason():
     ms = social_stub.manifests()
     names = {m.name for m in ms}
     assert names >= {"twitter_x", "linkedin", "facebook", "instagram",
-                     "bilibili", "xiaohongshu"}
+                     "bilibili_search", "xiaohongshu"}
     for m in ms:
         instance = m.factory()
         h = instance.health()
@@ -215,7 +215,7 @@ def test_new_connectors_are_registered_in_router():
         "v2ex_feed", "v2ex_fetch",
         "youtube_fetch", "youtube_channel_feed",
         "twitter_x", "linkedin", "facebook",
-        "instagram", "bilibili", "xiaohongshu",
+        "instagram", "bilibili_search", "bilibili_video_info", "xiaohongshu",
     }
     # capabilities the new connectors extend
     capabilities = {m.capability for m in reg.manifests}

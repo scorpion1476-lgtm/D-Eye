@@ -95,7 +95,7 @@ class TestSocialStubsRecordLawfulReasons:
         from deye.connectors import social_stub
         boundaries = social_stub.PLATFORM_BOUNDARIES
         for name in ("twitter_x", "linkedin", "facebook", "instagram",
-                     "bilibili", "xiaohongshu"):
+                     "bilibili_search", "xiaohongshu"):
             assert name in boundaries, f"missing boundary for {name}"
             reason = boundaries[name]
             # PLATFORM_BOUNDARIES is dict[str, str]; every value must be

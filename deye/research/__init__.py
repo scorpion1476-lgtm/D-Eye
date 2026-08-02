@@ -14,10 +14,14 @@ Public surface:
     highlights(text, query)              -> most-relevant excerpts
     find_similar(index, url)             -> shingle-based similarity
     extractive_answer(rows, query)       -> grounded answer, no LLM
+    semantic_search(rows, query)         -> cosine rank via local embeddings
+    semantic_answer(rows, query)         -> semantic retrieval + cited answer
 
-Optional embedding-based capabilities live under `research.embeddings` and
-`research.vector` behind the `[embeddings]` extra; they are not required
-for any of the primary functions above.
+The semantic layer (`research.embeddings`, `research.vector`) is keyless and
+stdlib-only by default: a deterministic local hashing embedding plus a local
+vector index, so semantic search works offline with no API key. A heavier
+neural embedder is an OPTIONAL `[embeddings]` extra behind the same interface
+and is never required for the functions above.
 """
 from __future__ import annotations
 
@@ -321,3 +325,43 @@ def extractive_answer(rows: list[dict], query: str, *,
     conf = min(1.0, 0.4 + 0.2 * len(all_snippets))
     return GroundedAnswer(query=query, answer="\n".join(lines),
                           citations=citations, confidence=conf)
+
+
+# ---------------------------------------------------------------------------
+# 6. Keyless semantic search (default) - local embeddings + local vector index
+# ---------------------------------------------------------------------------
+
+def semantic_search(rows: list[dict], query: str, *, embedder=None,
+                    k: int = 5) -> list[dict]:
+    """Rank *rows* by semantic (cosine) similarity to *query*.
+
+    Uses the keyless default embedder (a local, stdlib-only hashing embedding)
+    and a local in-memory vector index. No API key, no network, no paid
+    service. Each returned row carries a ``semantic_score`` in [0, 1].
+    """
+    from deye.research.embeddings import default_embedder
+    from deye.research.vector import VectorIndex
+
+    emb = embedder or default_embedder()
+    index = VectorIndex(dim=emb.dim).build(emb, rows)
+    hits = index.search_text(emb, query, k=k)
+    out: list[dict] = []
+    for score, payload in hits:
+        row = dict(payload)
+        row["semantic_score"] = round(float(score), 4)
+        out.append(row)
+    return out
+
+
+def semantic_answer(rows: list[dict], query: str, *, embedder=None,
+                    k: int = 5, max_snippets: int = 3) -> GroundedAnswer:
+    """Keyless semantic retrieval + a grounded, cited extractive answer.
+
+    Narrows the corpus to the top *k* rows by semantic similarity, then builds
+    an extractive answer whose every snippet is cited with its source URL. No
+    LLM and no paid key are required.
+    """
+    top = semantic_search(rows, query, embedder=embedder, k=k)
+    ans = extractive_answer(top, query, max_snippets=max_snippets)
+    ans.method = "semantic_extractive"
+    return ans
