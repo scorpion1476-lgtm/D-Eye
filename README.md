@@ -21,16 +21,36 @@ D-Eye is a local tool that gives Claude and other AI assistants a safe, honest w
 
 ---
 
+## What D-Eye is
+
+D-Eye is not a hosted service and not a paid API. It is a local MCP server paired with a command-line (CLI) tool, packaged as a Claude plugin, and it runs on your own machine. Here "tool" means a local piece of software you run, not an MCP tool.
+
+Fundamentally, D-Eye is an MCP server paired with a CLI tool; that is the primary categorization. It exposes a fixed set of MCP tools (search, fetch, extract, export_research_packet, query_evidence, capability_list, connector_health, surface_status, semantic_search, repo_inspect) over stdio, with an optional remote HTTP transport using bearer authentication. It also ships as a Claude plugin with commands and skills, and it includes connectors for web search, RSS, GitHub, Reddit, and other platforms; those connectors are internal components rather than the defining feature. The essence of D-Eye is the MCP server and CLI combined.
+
+In taxonomy, D-Eye is an MCP server first, a CLI second, delivered as a plugin, and the other terms are components inside it:
+
+- MCP server (the primary interface): it speaks the Model Context Protocol, so any MCP client (Claude Desktop, Claude Code, or others) can call its fixed set of tools (search, fetch, extract, export_research_packet, query_evidence, capability_list, connector_health, surface_status, semantic_search, repo_inspect) over stdio, with an optional remote HTTP transport behind bearer authentication.
+- CLI (deye): the same capabilities from a terminal.
+- Plugin: how D-Eye is packaged for Claude users. The plugin/d-eye bundle registers the server and adds slash-commands, skills, and a doctor hook; the hook and the skills are components that ship with the D-Eye plugin.
+- Connectors (web search, fetch, RSS, GitHub, Reddit, V2EX, Bilibili, public YouTube): internal modules that the capability router calls. A connector is a part of the solution, not the defining feature.
+
 ## Contents
 
+- [What D-Eye is](#what-d-eye-is)
 - [Why D-Eye](#why-d-eye)
 - [Capabilities](#capabilities)
+- [Prerequisites and installation](#prerequisites-and-installation)
 - [Quick start](#quick-start)
+- [Register with a client](#register-with-a-client)
+- [CLI reference](#cli-reference)
 - [Architecture](#architecture)
-- [Practical use cases](#practical-use-cases)
+- [MCP tools reference](#mcp-tools-reference)
+- [Configuration and environment](#configuration-and-environment)
+- [Use cases](#use-cases)
 - [Security posture](#security-posture)
-- [MCP tools](#mcp-tools)
 - [Status, honestly](#status-honestly)
+- [Blocked features](#blocked-features)
+- [Troubleshooting and FAQ](#troubleshooting-and-faq)
 - [Repository layout](#repository-layout)
 - [Contributing](#contributing)
 - [Security policy](#security-policy)
@@ -62,9 +82,38 @@ Most agent stacks reach the web in ways that are unsafe, unverifiable, or locked
 | Local browser adapter | Optional, opt in, isolated per session context with consent gated actions. | Optional extra |
 | Hosted search adapter | Optional, bring your own key. Disabled by default; falls back to the keyless search. | Optional key |
 
-## Quick start
+## Prerequisites and installation
 
-Prerequisite: Python 3.10 or newer. The core install pulls zero runtime dependencies (standard library only).
+- **Python 3.10 or newer.** The core install pulls zero runtime dependencies (standard library only). If your system `python3` is older (some macs ship 3.9), use a newer interpreter explicitly.
+- **Operating system:** macOS and Linux are the tested targets. Windows is not yet verified for the installer path (tracked in the roadmap).
+- **git** to clone the repository.
+
+Install the core:
+
+```bash
+git clone https://github.com/scorpion1476-lgtm/D-Eye D-Eye
+cd D-Eye
+python3 -m venv .venv
+./.venv/bin/python -m pip install -e .
+./.venv/bin/deye --version        # deye 0.2.0
+```
+
+### Optional extras
+
+Everything the core does is keyless and standard-library only. Extras are opt in and installed with `pip install -e '.[name]'` (quote the brackets in zsh).
+
+| Extra | Install | What it adds | When to use it |
+|---|---|---|---|
+| `mcp` | `pip install -e '.[mcp]'` | The local stdio MCP server SDK (`mcp[cli]`, pinned `<2`). | To register D-Eye with Claude Desktop or Claude Code. |
+| `remote` | `pip install -e '.[remote]'` | The remote Streamable-HTTP MCP transport (`mcp[cli]`, `uvicorn`, `starlette`). | To run `deye serve-http` behind bearer auth. |
+| `browser` | `pip install -e '.[browser]'` | The opt-in local browser adapter (`playwright`). Also run `./.venv/bin/python -m playwright install chromium`. | For the optional consent-gated headless browser. |
+| `secrets` | `pip install -e '.[secrets]'` | OS keyring support (`keyring`). | To resolve `keychain:` secret references instead of `env:`. |
+| `rich` | `pip install -e '.[rich]'` | `feedparser` and `requests`. | Optional richer feed parsing and an alternative HTTP client; the stdlib core already handles feeds and fetch, so this is not required. |
+| `dev` | `pip install -e '.[dev]'` | `pytest`, `ruff`, `pip-audit`, `pyyaml`. | To run the test suite and the security and lint checks. |
+
+There is no `embeddings` extra: keyless semantic search runs on a local hashing embedding in the standard-library core, so nothing extra is needed for `deye semantic`.
+
+## Quick start
 
 ```bash
 # 1. install the core (FOSS, no keys, no accounts)
@@ -85,15 +134,74 @@ python3 -m venv .venv
 ./.venv/bin/deye evidence "continuous pricing"
 ```
 
-Register D-Eye with Claude Desktop and Claude Code (local stdio MCP):
+The `research` command searches, fetches the top sources through the SSRF guarded path, extracts readable text, records each source with its URL, timestamp, and content hash into `~/.deye/evidence.db`, and writes a cited Markdown packet plus a JSON companion. Full walkthrough: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
+
+## Register with a client
+
+D-Eye registers as a local stdio MCP server. Install the `mcp` extra first:
 
 ```bash
 ./.venv/bin/python -m pip install -e '.[mcp]'
-./.venv/bin/deye init-claude              # writes the local MCP config
-./.venv/bin/deye init-claude --dry-run    # preview, change nothing
 ```
 
-The `research` command searches, fetches the top sources through the SSRF guarded path, extracts readable text, records each source with its URL, timestamp, and content hash into `~/.deye/evidence.db`, and writes a cited Markdown packet plus a JSON companion. Full walkthrough: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
+**Claude Desktop and Claude Code, automatically.** `deye init-claude` merges a `deye` entry into the Claude Desktop config for your OS (backing up any existing file and never dropping other servers) and prints the equivalent Claude Code command:
+
+```bash
+./.venv/bin/deye init-claude --dry-run                 # preview, change nothing
+./.venv/bin/deye init-claude --python ./.venv/bin/python   # write the config
+./.venv/bin/deye init-claude --run-claude-code         # also run `claude mcp add`
+```
+
+**Claude Desktop, manually.** Add this to `claude_desktop_config.json` (on macOS at `~/Library/Application Support/Claude/claude_desktop_config.json`), replacing the path with your venv's Python:
+
+```json
+{
+  "mcpServers": {
+    "deye": {
+      "command": "/absolute/path/to/D-Eye/.venv/bin/python",
+      "args": ["-m", "deye.mcp_server"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop so it reloads MCP servers.
+
+**Claude Code, manually.** The exact command `init-claude` prints:
+
+```bash
+claude mcp add --scope user deye -- /absolute/path/to/D-Eye/.venv/bin/python -m deye.mcp_server
+```
+
+**Any generic MCP client.** Launch the server over stdio with `python -m deye.mcp_server` using the venv Python; the client discovers the ten tools through the standard `tools/list` handshake.
+
+## CLI reference
+
+Every subcommand prints JSON to stdout and reads no secrets on its own. Generated from `deye --help`; run `deye <command> --help` for the exact flags.
+
+| Command | What it does | Example |
+|---|---|---|
+| `setup` | One-time local setup (read only, no secrets); writes `config.json` under `DEYE_HOME`. | `deye setup` |
+| `status` | Show configuration (version, home, read-only, search provider). | `deye status` |
+| `capabilities` | List the capability names the router can serve. | `deye capabilities` |
+| `connectors` | List registered connectors with license, cost, and credential needs. | `deye connectors` |
+| `doctor` | Health-check connectors; `--surfaces` also reports Claude surface activation. | `deye doctor --surfaces` |
+| `init-claude` | Register with Claude Desktop / Claude Code. Flags: `--python`, `--dry-run`, `--run-claude-code`. | `deye init-claude --dry-run` |
+| `search` | Keyless public web search. | `deye search "sqlite fts5"` |
+| `fetch` | Policy-gated fetch and readable-text extract of one URL. | `deye fetch https://example.com` |
+| `research` | search then fetch then cited packet, persisting evidence. Flags: `--max-sources`, `--output/-o`. | `deye research "topic" --max-sources 5 -o packet.md` |
+| `evidence` | Full-text query over the persistent evidence store. | `deye evidence "pricing"` |
+| `semantic` | Keyless semantic search over stored evidence, cited answer. Flag: `--k`. | `deye semantic "pricing" --k 3` |
+| `usage` | Report per-adapter usage, estimated cost, and call rate (opt-in log). | `deye usage` |
+| `repo` | Inspect a public GitHub repository, read only. | `deye repo owner/name` |
+| `bilibili` | Fetch a Bilibili video's public info via the keyless view API. | `deye bilibili <BV-id-or-url>` |
+| `transcript` | Fetch a YouTube video's public captions. Flag: `--lang`. | `deye transcript <youtube-url> --lang en` |
+| `multi-search` | Fan a query across several public connectors and dedupe. Flag: `--capabilities`. | `deye multi-search "topic"` |
+| `graph` | Build an evidence graph plus contradiction candidates. Flags: `--markdown`, `--output/-o`. | `deye graph --markdown -o graph.md` |
+| `serve-http` | Run the remote Streamable-HTTP MCP (needs `remote` extra and `DEYE_HTTP_TOKEN`). Flags: `--host`, `--port`. | `DEYE_HTTP_TOKEN=... deye serve-http` |
+| `backend` | Local provider-neutral backend: `auth`, `queue`, `object`, `secret`. | `deye backend queue --help` |
+| `release` | Sign or verify a release bundle (Ed25519 + SHA256SUMS): `manifest`, `keygen`, `sign`, `verify`. | `deye release verify <bundle-dir>` |
+| `lifecycle` | Setup, update, backup, rollback, uninstall, repair. | `deye lifecycle env` |
 
 ## Architecture
 
@@ -108,13 +216,74 @@ D-Eye is organised in four layers:
 3. **Evidence and data.** A persistent SQLite evidence store, provenance for every result (source, timestamp, content hash), and an evidence graph that surfaces claims, relationships, and contradiction candidates.
 4. **Security foundation.** Decided deterministically, outside the model: an SSRF guard with private IP and cloud metadata blocking and connection level IP pinning, a consent gate that keeps writes off by default, credential redaction, and a policy engine that runs before every fetch.
 
-## Practical use cases
+## MCP tools reference
 
-- **Give Claude Desktop safe, cited web access.** Register the local MCP server; the client sees a small, stable tool set, and every response is untrusted evidence with provenance.
-- **Produce a sourced research packet on a topic.** `deye research "topic" --max-sources 5 -o packet.md` returns a cited Markdown packet plus a JSON companion, with each source hashed and stored.
-- **Monitor RSS and Atom feeds for changes.** Pull a feed through the XXE hardened reader and compare against previously captured evidence to detect what changed.
-- **Read a public GitHub repository and its issues.** `deye repo owner/name` returns read only repository metadata and recent commits, no key required.
-- **Query previously gathered evidence, offline.** `DEYE_OFFLINE=1 deye evidence "sqlite fts5"` runs full text search over the local corpus with zero network egress.
+The server exposes a small, fixed tool surface. Raw scrapers and shell access are deliberately not exposed to the model. Every tool returns a JSON object.
+
+| Tool | Input | Purpose and output |
+|---|---|---|
+| `capability_list` | none | Lists the server's capabilities and tool names. Returns `{capabilities: [...], tools: [...]}`. |
+| `connector_health` | none | Reports the health of every registered connector, one `{connector, capability, license, status, detail}` per entry. |
+| `search` | `query: str` | Keyless public web search; returns a redacted `content` text block of result titles and URLs plus structured `artifacts`. |
+| `fetch` | `url: str` | Policy-gated fetch and extract of one URL; returns the readable text plus provenance (url, timestamp, content hash). |
+| `extract` | `html: str` | Converts a block of HTML to readable text; returns `{ "text": "..." }`. |
+| `export_research_packet` | `query: str`, `max_sources: int = 3` | Search, fetch, cite, persist, and return a grounded Markdown packet with per-source citations. |
+| `query_evidence` | `query: str` | Full-text query over the persistent evidence store; returns `{query, results, stats}` with matching records and provenance. |
+| `semantic_search` | `query: str`, `k: int = 5` | Keyless semantic search over stored evidence; returns `{query, hits, answer, corpus_size}`, the answer grounded in the k nearest cited sources. |
+| `repo_inspect` | `repo: str` | Read-only public GitHub repository metadata and recent commits (owner/name or URL). |
+| `surface_status` | none | Reports, honestly, which client surfaces D-Eye can be active in. |
+
+Example (the `search` tool, as the CLI calls the same handler):
+
+```bash
+./.venv/bin/deye search "sqlite fts5"
+# -> {"content": "SQLite FTS5 Extension -- https://sqlite.org/fts5.html\n...", "artifacts": [...]}
+```
+
+Local stdio and remote streamable HTTP transports are documented in [`docs/MCP_GUIDE.md`](docs/MCP_GUIDE.md). The remote transport requires a bearer token (`DEYE_HTTP_TOKEN`, at least 16 characters) and should sit behind a TLS terminating reverse proxy.
+
+## Configuration and environment
+
+D-Eye reads no secrets on its own and stores none inline. Configuration lives in a single JSON file; secrets are only ever *references* (`env:NAME` or `keychain:SERVICE/ACCOUNT`) resolved at call time and never persisted or logged.
+
+**Config file:** `$DEYE_HOME/config.json` (default `~/.deye/config.json`), created by `deye setup`. The home directory is created owner-only (mode 0700). Shape:
+
+```json
+{
+  "search_provider": "duckduckgo",
+  "read_only": true,
+  "exa_api_key_ref": "env:EXA_API_KEY"
+}
+```
+
+The persistent evidence store is `$DEYE_HOME/evidence.db`.
+
+**Environment variables (all optional):**
+
+| Variable | Effect |
+|---|---|
+| `DEYE_HOME` | Where D-Eye stores config and evidence. Default `~/.deye`, created mode 0700. |
+| `DEYE_OFFLINE` | Set to `1`, `true`, or `yes` for offline mode: local reads only, no network egress; lifecycle update and provisioning refuse to reach the network. |
+| `DEYE_HTTP_TOKEN` | Bearer token required by `deye serve-http` (at least 16 characters). Unset means the remote server refuses to start. |
+| `DEYE_USAGE_LOG` | Path to an opt-in usage log; when set, adapter usage and estimated cost are recorded for `deye usage`. |
+| `DEYE_BROWSER_PROFILES` | Root directory for the optional browser adapter's isolated per-session profiles. |
+| `DEYE_BACKEND_PASSWORD` | Password (at least 8 characters) for the local `deye backend auth` user store. |
+| `EXA_API_KEY` | Optional hosted search adapter key, referenced as `env:EXA_API_KEY`. Leave unset to use the keyless DuckDuckGo default. |
+
+**Read-only by default and the consent gate.** `read_only` is `true` by default. Write, browser, and side-effecting actions are refused unless a human grants explicit consent for that specific action; the policy engine (`deye/core/policy.py`) decides this outside the model.
+
+## Use cases
+
+Functional and technical workflows, each with a command you can run from the clone root.
+
+- **Produce a cited research packet for a report.** `deye research "continuous pricing airline revenue management" --max-sources 5 -o packet.md` searches, fetches the top sources through the SSRF-guarded path, and writes a cited Markdown packet plus a JSON companion, each source hashed and stored. Outcome: a sourced brief you can hand to a reviewer.
+- **Give Claude Desktop safe, cited web access.** Register the local MCP server (see above); the client sees the ten-tool surface, and every response comes back as untrusted evidence with provenance. Outcome: the assistant can research the web without being able to reach internal addresses or obey injected instructions.
+- **Query previously gathered evidence, offline.** `DEYE_OFFLINE=1 deye evidence "sqlite fts5"` runs full-text search over the local corpus with zero network egress. Outcome: fast recall of what you already captured, on a plane or an air-gapped box.
+- **Answer a question from stored evidence, with citations.** `deye semantic "pricing strategy" --k 3` runs keyless semantic search over the evidence store and returns a grounded answer citing the nearest sources. Outcome: a short, sourced answer without any external call.
+- **Read a public GitHub repository.** `deye repo owner/name` returns read-only repository metadata and recent commits, no key required. Outcome: a quick, keyless look at a project's shape.
+- **Fan a query across several sources and dedupe.** `deye multi-search "topic"` routes the query across public connectors and merges deduplicated results. Outcome: broader coverage than a single source in one call.
+- **Surface contradictions across sources.** `deye graph --markdown -o graph.md` builds an evidence graph over the stored corpus and flags claims that contradict each other. Outcome: a reviewable map of where sources disagree.
+- **Use D-Eye inside an agent loop.** Point any MCP client at `python -m deye.mcp_server`; the agent calls `search`, `fetch`, `export_research_packet`, and `query_evidence` as tools, and every result carries provenance. Outcome: web use that stays auditable and policy-bound.
 
 ## Security posture
 
@@ -128,29 +297,10 @@ Each control below is genuinely implemented in the tracked source and covered by
 | No hard coded tokens | Enforced by a test that scans the tracked tree for credential shaped strings. |
 | Secret redaction | Every audit line, log entry, and exported packet passes through a credential redactor before it is written or emitted. |
 | Untrusted evidence | Every fetched result is tagged untrusted and carries its source, timestamp, and content hash; the model is told never to obey text found inside evidence. |
-| Decompression and size caps | Responses are size capped and decompression aborts past the cap, defending against gzip bombs. |
+| Decompression and size caps | Responses are size capped (5 MiB) and decompression aborts past the cap, defending against gzip bombs. |
 | Deterministic policy | All of the above is decided outside the model, in `deye/core/policy.py` and the connector fetch path, not by the LLM. |
 
 More detail: [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
-
-## MCP tools
-
-The server exposes a small, stable tool surface. Raw scrapers and shell access are deliberately not exposed to the model.
-
-| Tool | What it does |
-|---|---|
-| `capability_list` | List the capabilities and tools the server offers. |
-| `connector_health` | Report the health of every registered connector. |
-| `search` | Keyless public web search, returned as redacted content with artifacts. |
-| `fetch` | Policy gated fetch and extract of a single URL. |
-| `extract` | Convert a block of HTML to readable text. |
-| `export_research_packet` | Search, fetch, cite, persist, and return a grounded Markdown packet. |
-| `query_evidence` | Query the persistent evidence store. |
-| `semantic_search` | Keyless local semantic search over stored evidence, returning a grounded, cited answer. |
-| `repo_inspect` | Read only public GitHub repository metadata and recent commits. |
-| `surface_status` | Report, honestly, which client surfaces D-Eye can be active in. |
-
-Local stdio and remote streamable HTTP transports are documented in [`docs/MCP_GUIDE.md`](docs/MCP_GUIDE.md). The remote transport requires a bearer token (`DEYE_HTTP_TOKEN`) and should sit behind a TLS terminating reverse proxy.
 
 ## Status, honestly
 
@@ -158,7 +308,7 @@ D-Eye is deliberately truthful about what is proven and what is not.
 
 - **Tests (verified in this environment on 2026-08-02):** the full suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh`, which installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything (422 passed, 6 skipped, 0 failed with every live source reachable). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count dips by one or two as the network varies.
 - **Static analysis:** Bandit reports 0 high and 0 medium findings; the low findings are the expected fixed argument subprocess calls and defensive exception handling.
-- **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are blocked by an external platform (a login or anti-bot wall, a hosted GitHub/Claude account surface, or a container runtime the FOSS gate excludes), each with a precise recorded reason. No row remains implemented-but-not-verified or partial; none is inflated.
+- **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are BLOCKED BY EXTERNAL PLATFORM (a login or anti-bot wall, a hosted GitHub or Claude account surface, or a container or hosting runtime the FOSS gate excludes), each with a precise recorded reason in [`docs/BLOCKED_FEATURES.md`](docs/BLOCKED_FEATURES.md). No row remains implemented-but-not-verified or partial; none is inflated.
 - **Not claimed:** D-Eye as a whole is not production ready, and no claim of 100 percent completion is made.
 
 Honest roadmap:
@@ -169,6 +319,20 @@ Honest roadmap:
 
 Shipped since the last revision: FOSS signed-release and bundle verification (OpenSSL Ed25519 signature over a SHA256SUMS manifest), the live headless browser edge (Playwright), keyless local semantic search as the default (a local hashing embedding plus a local vector index), usage and cost reporting for optional adapters, a keyless Bilibili public video-info connector, and a `repo_inspect` GitHub tool on the MCP surface.
 
+## Blocked features
+
+14 of the 167 catalogued rows are BLOCKED BY EXTERNAL PLATFORM. They are listed openly, with a precise reason each, in [`docs/BLOCKED_FEATURES.md`](docs/BLOCKED_FEATURES.md). In short: Twitter/X, LinkedIn, Facebook and Instagram, Xiaohongshu, and the live YouTube caption path sit behind login or anti-bot walls; browser-extension publishing and the Claude plugin marketplace need per-store or client-side review; private-repo publication and GitHub issue and roadmap management are hosted GitHub account surfaces; the non-root container, Docker package, and automatic remote hosting need a container or hosting runtime the FOSS clean-clone gate excludes; and automatic remote connector registration and universal cross-surface activation are performed by the Claude platform with human opt-in. The 14 IDs are `C03-F004`, `C03-F006`, `C03-F008`, `C03-F009`, `C03-F011`, `C04-F004`, `C08-F008`, `C09-F001`, `C09-F009`, `C11-F016`, `C12-F019`, `C12-F025`, `C12-F026`, `C12-F036`, and they match the feature audit exactly. D-Eye never evades a login, CAPTCHA, or anti-bot defence; where a lawful keyless portion exists, it is built and tested and only the gated portion stays blocked.
+
+## Troubleshooting and FAQ
+
+- **`deye doctor` shows a connector as unusable.** Live connectors need network; when a source is unreachable or rate-limited it reports as unusable and the router falls back to a healthy connector. Re-run `deye doctor` (or `deye doctor --surfaces`) once connectivity returns.
+- **Working offline.** Set `DEYE_OFFLINE=1` to keep every command to local reads with zero network egress; `deye evidence` and `deye semantic` run fully offline over the stored corpus. Commands that must reach the network (for example `deye research`) degrade cleanly rather than hanging.
+- **The browser adapter does nothing.** It is opt in. Install `.[browser]` and run `./.venv/bin/python -m playwright install chromium`; without those, the browser tests skip and the adapter reports itself unavailable rather than failing.
+- **Test count varies between runs.** Live-network tests skip when a source is unreachable or rate-limited, so the passing count dips by one or two depending on the network. Structural browser tests skip when Playwright is installed (the live ones run instead), and the reverse offline.
+- **`deye serve-http` refuses to start.** It needs the `remote` extra and a `DEYE_HTTP_TOKEN` of at least 16 characters; it fails closed by design. Put it behind a TLS terminating reverse proxy.
+- **`init-claude` and my existing MCP servers.** `deye init-claude` merges its entry and backs up the existing config first; it never drops other servers. Use `--dry-run` to preview.
+- **Which Python.** D-Eye needs Python 3.10 or newer; if your default `python3` is older, create the venv with a newer interpreter.
+
 ## Repository layout
 
 ```
@@ -176,7 +340,8 @@ D-Eye/             (the clone root is the package root)
   deye/            core package: core (policy, router, evidence, provenance, redact),
                    connectors, research, skills, backend, browser, lifecycle
   tests/           test suite (unit, integration, live network, subprocess, browser)
-  docs/            guides (quickstart, MCP, connectors, skills, offline, threat model)
+  docs/            guides (quickstart, MCP, connectors, skills, offline, threat model,
+                   blocked features)
   plugin/d-eye/    Claude plugin: manifest, marketplace, skills, commands, hooks
   assets/brand/    the approved logo and the architecture diagram
   scripts/         build, SBOM, secret scan, dash scan, repo verification
