@@ -10,7 +10,7 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-3da639.svg)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)
-![Tests](https://img.shields.io/badge/tests-421%20passing%20on%20clean%20clone-2c7a3f.svg)
+![Tests](https://img.shields.io/badge/tests-422%20passing%20on%20clean%20clone-2c7a3f.svg)
 ![Status](https://img.shields.io/badge/status-working%20audited%20core-1f6feb.svg)
 ![FOSS--first](https://img.shields.io/badge/FOSS--first-yes-6f42c1.svg)
 ![Local--first](https://img.shields.io/badge/local--first-yes-a07020.svg)
@@ -156,7 +156,7 @@ Local stdio and remote streamable HTTP transports are documented in [`docs/MCP_G
 
 D-Eye is deliberately truthful about what is proven and what is not.
 
-- **Tests (verified in this environment on 2026-08-02):** the full suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh`, which installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything (421 passed, 7 skipped, 0 failed). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count varies with the network.
+- **Tests (verified in this environment on 2026-08-02):** the full suite runs with 0 failures on a fresh public clone via `scripts/clean_clone_gate.sh`, which installs the documented extras plus `.[browser]` and `playwright install chromium`, then runs everything (422 passed, 6 skipped, 0 failed with every live source reachable). Structural browser tests cover the Playwright-absent code path and skip when the extra is present; the live headless browser tests run when it is present. Live-network tests skip when a source is unreachable or rate-limited and pass when it is reachable, so the exact passing count dips by one or two as the network varies.
 - **Static analysis:** Bandit reports 0 high and 0 medium findings; the low findings are the expected fixed argument subprocess calls and defensive exception handling.
 - **Feature catalogue:** under a strict evidence rubric, 153 of 167 catalogued capabilities are PRODUCTION READY, each backed by a real acceptance test that exercises the feature and passes on a clean clone. The other 14 are blocked by an external platform (a login or anti-bot wall, a hosted GitHub/Claude account surface, or a container runtime the FOSS gate excludes), each with a precise recorded reason. No row remains implemented-but-not-verified or partial; none is inflated.
 - **Not claimed:** D-Eye as a whole is not production ready, and no claim of 100 percent completion is made.
