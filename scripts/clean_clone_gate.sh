@@ -21,7 +21,9 @@ CLONE="${WORK}/D-Eye"
 echo "clean-clone gate: ref=${REF}"
 echo "clean-clone gate: workdir=${WORK}"
 
-git clone --branch "${REF}" --depth 1 "${REPO_URL}" "${CLONE}"
+# Full clone (no --depth) so it matches the README's `git clone` exactly and
+# history-dependent tests see the real repository history.
+git clone --branch "${REF}" "${REPO_URL}" "${CLONE}"
 
 cd "${CLONE}"
 python3 -m venv .venv

@@ -17,6 +17,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -51,6 +53,14 @@ def test_c09_f001_repository_has_recent_history_from_production_completion_progr
         capture_output=True, text=True, check=False, timeout=10,
     )
     assert r.returncode == 0
+    # A shallow clone (git clone --depth 1) has no history to inspect; skip
+    # rather than fail, since history cannot be asserted on what is not there.
+    shallow = subprocess.run(
+        ["git", "-C", str(REPO), "rev-parse", "--is-shallow-repository"],
+        capture_output=True, text=True, check=False, timeout=10,
+    )
+    if shallow.stdout.strip() == "true":
+        pytest.skip("shallow clone: repository history is not available to assert on")
     log = r.stdout
     # Recent history must come from the production-completion programme.
     # Its commits are marked by a catalogue feature-id reference (e.g.
