@@ -1188,3 +1188,47 @@ Honest distribution now (five statuses, sum 167):
 Clean-clone gate PASS (0 failures, 0 errors) on a fresh public clone. No row
 promoted without a real passing test; nothing inflated, force-pushed, or
 circumvented. Feature branch pushed; main fast-forwarded.
+
+## Completion build, closing tranche (2026-08-02)
+
+Resolved the final 19 non-terminal rows (18 IMPLEMENTED BUT NOT FULLY VERIFIED
+plus 1 PARTIAL). Every one is now either PRODUCTION READY on a real acceptance
+test that passes on a clean clone, or BLOCKED BY EXTERNAL PLATFORM with a precise
+reason. No IMPLEMENTED-BUT-NOT-VERIFIED and no PARTIAL remain.
+
+Root problem found and fixed: GitHub Actions CI was red on HEAD. The core matrix
+never installed the deye package (only pytest+ruff), so console-script tests
+failed with "D-Eye not installed on PATH"; and test_pip_audit_osv did not skip
+when pip-audit was absent and used a miscalibrated >100-byte gate that a
+stdlib-only core env (91 bytes) failed. The local clean-clone gate installs
+[dev,mcp,remote,browser] so it had been green while CI was red. Fixed ci.yml to
+install `-e .[dev]` / `-e .[dev,remote]`, hardened the pip-audit test, and added
+pyyaml to the dev extra. CI is now green on both matrices.
+
+Promoted to PRODUCTION READY (14), each against a real end-to-end test:
+- C09-F006 Branch management        -> tests/test_scripts_c09.py::TestVerifyRepo
+- C09-F010 CI validation            -> GitHub Actions run 30732324314 success + tests/test_ci_workflow.py
+- C12-F002 Local MCP                -> tests/test_mcp_subprocess_integration.py
+- C12-F016 Plugin represented       -> tests/test_plugin_activation.py
+- C12-F017 Skill represented        -> tests/test_skills.py + test_plugin_manifest.py
+- C12-F020 GitHub publication       -> tests/test_github_publication.py
+- C12-F022 Auto install on Mac      -> tests/test_install_sh_macos.py
+- C12-F023 Claude Desktop config    -> tests/test_init_claude.py
+- C12-F024 Claude Code config       -> tests/test_init_claude.py::test_claude_code_command_shape
+- C12-F027 Browser automation       -> tests/test_browser.py (live headless)
+- C12-F028 YouTube/social connectors-> registration + test_new_connectors + test_youtube_transcript
+- C12-F031 Evidence graph           -> tests/test_graph.py
+- C12-F035 Updates and rollback     -> tests/test_update_rollback_cycle.py
+- C12-F037 Semantic research integ. -> tests/test_semantic_search.py::test_app_semantic_answer_over_evidence_store
+
+Reclassified to BLOCKED BY EXTERNAL PLATFORM (5), precise reasons in
+reports/REMAINING_EXTERNAL_BLOCKERS.md:
+- C09-F001 Private repository publication (hosted GitHub visibility state)
+- C09-F009 Issue and roadmap management (hosted GitHub Issues/Projects)
+- C11-F016 Non-root container (needs a container runtime; no-Docker)
+- C12-F019 Docker package (needs docker build; no-Docker)
+- C12-F025 Automatic remote hosting (needs a remote host + container runtime)
+
+Final distribution (two terminal statuses, sum 167):
+- PRODUCTION READY: 153
+- BLOCKED BY EXTERNAL PLATFORM: 14
