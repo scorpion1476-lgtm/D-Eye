@@ -6,10 +6,11 @@
 > been consolidated into the current line, and its test counts are
 > superseded.
 >
-> For current, authoritative status see the "Status, honestly" section of
-> the top-level [`README.md`](../README.md). The latest verified run is 358
-> passed, 0 failed out of 363 collected, and under the strict evidence
-> rubric 55 of 167 catalogue rows are PRODUCTION READY. The Phase-A section below is a
+> For current, authoritative status see the "Status" section of
+> the top-level [`README.md`](../README.md). The latest verified run is 418
+> passed, 0 failed out of 424 collected, and under the strict evidence
+> rubric 153 of 167 catalogue rows are PRODUCTION READY (14 are BLOCKED BY
+> EXTERNAL PLATFORM). The Phase-A section below is a
 > pre-integration record; its per-item states and "recommended next
 > actions" no longer reflect the current tree.
 

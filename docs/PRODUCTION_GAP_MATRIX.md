@@ -4,13 +4,12 @@
 > 2026-07-30, retained only as a record. Do not treat any status or number
 > below as current.
 >
-> The current, authoritative status is the "Status, honestly" section of
+> The current, authoritative status is the "Status" section of
 > the top-level [`README.md`](../README.md). Under the strict evidence
-> rubric, 55 of 167 catalogue rows are PRODUCTION READY; the remainder are
-> IMPLEMENTED BUT NOT FULLY VERIFIED, PARTIAL, or BLOCKED BY EXTERNAL
-> PLATFORM. An earlier local pass that reached 146 PRODUCTION READY, and
-> the 63 provisional figure once cited here, were both corrected downward
-> to the strict rubric of 55.
+> rubric, 153 of 167 catalogue rows are PRODUCTION READY and the remaining
+> 14 are BLOCKED BY EXTERNAL PLATFORM. Earlier figures once cited here (a 63
+> provisional count, a 146 local pass, and a stricter 55) are all superseded
+> by the current strict-rubric headline of 153.
 >
 > The per-row assessments below reflect state on 2026-07-29 and are stale
 > (the browser adapter, multi-tenant scoping, licence-drift enforcement,

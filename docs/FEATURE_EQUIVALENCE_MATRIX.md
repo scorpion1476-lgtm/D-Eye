@@ -3,8 +3,9 @@
 _Internal record of how each of the 12 catalogue categories maps onto
 D-Eye's own modules, tests, and CLI/plugin surface. Row-level status per
 feature ID is tracked in the project's governance workbook and summarised
-in the "Status, honestly" section of the top-level [README](../README.md);
-under the strict evidence rubric, 55 of 167 rows are PRODUCTION READY._
+in the "Status" section of the top-level [README](../README.md);
+under the strict evidence rubric, 153 of 167 rows are PRODUCTION READY and
+14 are BLOCKED BY EXTERNAL PLATFORM._
 
 ## Category 1 - Setup + lifecycle (8 rows)
 

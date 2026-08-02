@@ -1,11 +1,12 @@
 # D-Eye - Test Report
 
-> **Current run (2026-08-01, macOS Darwin 24.6.0, Python 3.14.3):** the full
-> suite is **358 passed, 0 failed out of 363 collected** via
+> **Current run (2026-08-02, macOS Darwin 24.6.0, Python 3.14.3):** the full
+> suite is **418 passed, 0 failed out of 424 collected** via
 > `./.venv/bin/python -m pytest -q -rs`. Four browser tests skip when the
-> optional Playwright extra is present, and one live-network test skips
+> optional Playwright extra is present, two workspace-only audit-artifact
+> tests skip outside the workspace tree, and one live-network test skips
 > when its source is unreachable (it passes when reachable), so passing is
-> 358 or 359 and skipped is 5 or 4 across runs. Bandit reports 0 high and 0
+> 417 or 418 and skipped is 7 or 6 across runs. Bandit reports 0 high and 0
 > medium findings, and the live OSV pip-audit reports no known
 > vulnerabilities. The per-phase tables below are historical snapshots;
 > their smaller counts (62, 66, 69, 73) are superseded by the current run.
