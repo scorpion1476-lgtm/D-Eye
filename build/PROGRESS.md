@@ -1136,3 +1136,55 @@ Honest distribution now: 112 PRODUCTION READY, 9 BLOCKED BY EXTERNAL
 PLATFORM, 40 IMPLEMENTED BUT NOT FULLY VERIFIED, 6 PARTIAL. No row promoted
 without a real passing test; the remaining 46 still need real tests or real
 builds and were not inflated. README status updated to 112/167.
+
+## Completion build, tranche 3 (2026-08-02)
+
+Built and proved the finishable rows, each promoted only against a real
+acceptance test that passes on a fresh full clone (clean-clone gate installs
+`.[dev,mcp,remote,browser]` + `playwright install chromium`; result: 414
+passed, 9 skipped, 0 failed).
+
+Promoted 27 rows to PRODUCTION READY:
+
+- Browser-live (live headless Chromium, data: URLs, no network, no anti-bot):
+  C04-F001 isolated context per session (no cookie bleed); C04-F003 consent-
+  gated click + fill on a real element; C04-F005 render_html executes JS and
+  returns the mutated DOM. tests/test_browser.py live tests; the keyless core
+  still passes without the extra.
+- Keyless capabilities built this tranche:
+  - C05-F002 keyless semantic search as the default: a stdlib hashing
+    embedding + a local vector index, cited extractive answers, wired to
+    `deye semantic` and MCP `semantic_search`. tests/test_semantic_search.py.
+  - C05-F013 usage/cost/rate reporting for optional adapters
+    (deye/backend/usage.py, optional router meter, `deye usage`).
+    tests/test_usage_reporting.py.
+  - C09-F007 / C12-F033 FOSS signed-release + bundle verification
+    (deye/release.py: SHA256SUMS integrity + OpenSSL Ed25519 signature,
+    `deye release`). tests/test_release_signing.py.
+  - C03-F010 Bilibili keyless public video-info via x/web-interface/view
+    (deye/connectors/bilibili.py, `deye bilibili`). Search stays (b)
+    (bilibili_search, WBI anti-bot signature). tests/test_bilibili.py.
+  - C09-F003 GitHub MCP integration: `repo_inspect` tool on D-Eye's MCP
+    surface. tests/test_mcp_github_integration.py.
+- Backend on a shipped `deye backend` CLI surface: C10-F001 auth, C10-F002
+  queue, C10-F003/F004 object/document store, C10-F006 secret reference check,
+  C10-F009 research orchestration. tests/test_backend_cli.py + test_offline_e2e.
+- Plugin behavioural activation (no hosted Claude client): C08-F001..F007,
+  F009..F013 (server actually launches, commands/skills route to real tools,
+  hook runs `deye doctor`, manifest components resolve, version consistency,
+  MCPB build, rollback, config sync). tests/test_plugin_activation.py plus
+  existing test_lifecycle / test_build_mcpb.
+
+Reclassified C08-F008 (plugin marketplace) to BLOCKED BY EXTERNAL PLATFORM:
+listing/installation can only be observed inside the hosted Claude marketplace.
+
+Honest distribution now (five statuses, sum 167):
+- PRODUCTION READY: 139
+- IMPLEMENTED BUT NOT FULLY VERIFIED: 18
+- BLOCKED BY EXTERNAL PLATFORM: 9
+- PARTIAL: 1
+- NOT IMPLEMENTED: 0
+
+Clean-clone gate PASS (0 failures, 0 errors) on a fresh public clone. No row
+promoted without a real passing test; nothing inflated, force-pushed, or
+circumvented. Feature branch pushed; main fast-forwarded.
