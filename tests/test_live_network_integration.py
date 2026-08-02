@@ -45,6 +45,20 @@ def _direct_dns_works(host: str) -> bool:
         return False
 
 
+def _skip_if_github_rate_limited(text_or_warnings) -> None:
+    """GitHub's unauthenticated API is 60 requests/hour/IP. When that limit is
+    hit the endpoint is reachable but returns a rate-limit body instead of real
+    data, so these live behaviours cannot be exercised. Skip cleanly - the same
+    contract this file uses for an unreachable endpoint - rather than fail.
+    """
+    if isinstance(text_or_warnings, (list, tuple)):
+        blob = " ".join(str(w) for w in text_or_warnings)
+    else:
+        blob = str(text_or_warnings)
+    if "rate limit" in blob.lower():
+        pytest.skip("github unauthenticated rate limit reached; cannot exercise live")
+
+
 def _reachable(url: str, timeout: float = 5.0) -> bool:
     """Two-stage reachability: HTTP works AND direct DNS resolves.
     D-Eye's SSRF-hardened path bypasses HTTP proxies by design, so a
@@ -70,6 +84,7 @@ import urllib.parse  # noqa: E402  (used above)
 def test_live_github_repo_returns_real_metadata():
     connector = github_repo.GitHubRepoConnector(Config())
     env = connector.run({"repo": "python/cpython"})
+    _skip_if_github_rate_limited(env.warnings)
     assert env.source.connector == "github_repo"
     assert env.trust.untrusted is True
     assert "python/cpython" in env.content
@@ -83,9 +98,14 @@ def test_live_github_repo_returns_real_metadata():
 @pytest.mark.skipif(not _reachable("https://api.github.com/"), reason="api.github.com unreachable")
 def test_live_github_repo_rejects_nonexistent():
     connector = github_repo.GitHubRepoConnector(Config())
-    with pytest.raises(Exception) as exc:
-        connector.run({"repo": "definitely-not-a-real-owner-42/repo-nope-42"})
-    assert "not found" in str(exc.value).lower() or "404" in str(exc.value).lower()
+    try:
+        env = connector.run({"repo": "definitely-not-a-real-owner-42/repo-nope-42"})
+    except Exception as exc:
+        assert "not found" in str(exc.value).lower() or "404" in str(exc.value).lower()
+        return
+    # No exception: only acceptable if GitHub rate-limited the lookup.
+    _skip_if_github_rate_limited(env.warnings)
+    pytest.fail("expected a not-found error for a nonexistent repo")
 
 
 # ---------------------------------------------------------------------------
@@ -118,6 +138,7 @@ def test_live_safe_get_real_tcp_and_real_dns():
         "https://api.github.com/repos/python/cpython", limits=Limits(),
     )
     assert body
+    _skip_if_github_rate_limited(body.decode("utf-8", errors="replace"))
     assert b"cpython" in body
     assert final_url == "https://api.github.com/repos/python/cpython"
 
@@ -145,6 +166,7 @@ def test_live_size_cap_truncates_real_body():
         "https://api.github.com/repos/python/cpython/commits?per_page=50",
         limits=Limits(max_bytes=500),
     )
+    _skip_if_github_rate_limited(body.decode("utf-8", errors="replace"))
     assert len(body) <= 500
     assert any("truncat" in w or "size" in w for w in warnings), warnings
 

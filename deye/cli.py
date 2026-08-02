@@ -207,6 +207,74 @@ def cmd_init_claude(args, cfg: Config) -> int:
     return 0
 
 
+def cmd_backend(args, cfg: Config) -> int:
+    """`deye backend <group> <verb>`: local provider-neutral backend surface.
+
+    Auth, queue, and object storage are all local + keyless (SQLite + files
+    under DEYE_HOME). Passwords are read from the DEYE_BACKEND_PASSWORD
+    environment variable, never from argv, so secrets never hit the process
+    table or shell history.
+    """
+    import os as _os
+
+    from deye.backend import AuthStore, ObjectStore, Queue
+    from deye.core.config import resolve_secret
+    home = cfg.ensure_home()
+    group = args.group
+
+    if group == "auth":
+        store = AuthStore(home / "auth.db")
+        if args.verb == "add-user":
+            pw = _os.environ.get("DEYE_BACKEND_PASSWORD")
+            if not pw:
+                _print({"error": "set DEYE_BACKEND_PASSWORD (>= 8 chars) to add a user"})
+                return 1
+            uid = store.create_user(args.username, pw, role=args.role)
+            _print({"created": True, "user_id": uid, "username": args.username,
+                    "role": args.role}); return 0
+        if args.verb == "verify":
+            pw = _os.environ.get("DEYE_BACKEND_PASSWORD", "")
+            user = store.verify_password(args.username, pw)
+            _print({"authenticated": user is not None,
+                    "role": user["role"] if user else None}); return 0
+
+    if group == "queue":
+        q = Queue(home / "queue.db")
+        if args.verb == "enqueue":
+            job_id = q.enqueue(args.topic, json.loads(args.payload or "{}"))
+            _print({"enqueued": True, "job_id": job_id}); return 0
+        if args.verb == "claim":
+            job = q.claim(args.topic or None)
+            _print(job or {"claimed": False}); return 0
+        if args.verb == "stats":
+            _print({"queue": q.stats()}); return 0
+
+    if group == "object":
+        store = ObjectStore(home)
+        if args.verb == "put":
+            sha = store.put(Path(args.file).read_bytes())
+            _print({"sha256": sha}); return 0
+        if args.verb == "get":
+            data = store.get(args.sha)
+            if data is None:
+                _print({"found": False}); return 1
+            if args.output:
+                Path(args.output).write_bytes(data)
+                _print({"found": True, "written": args.output}); return 0
+            _print({"found": True, "bytes": len(data)}); return 0
+        if args.verb == "stats":
+            _print({"objects": store.stats()}); return 0
+
+    if group == "secret":
+        if args.verb == "check":
+            # Report whether a reference resolves. NEVER print the value.
+            resolved = resolve_secret(args.ref)
+            _print({"ref": args.ref, "resolves": resolved is not None}); return 0
+
+    _print({"error": f"unknown backend command: {group} {getattr(args, 'verb', '')}"})
+    return 1
+
+
 def cmd_release(args, cfg: Config) -> int:
     """`deye release <verb>`: manifest / keygen / sign / verify a bundle."""
     from pathlib import Path as _P
@@ -326,6 +394,27 @@ def build_parser() -> argparse.ArgumentParser:
     h.add_argument("--host", default="127.0.0.1")
     h.add_argument("--port", type=int, default=8080)
 
+    be = sub.add_parser("backend", help="local provider-neutral backend: auth / queue / object / secret")
+    be_sub = be.add_subparsers(dest="group", required=True)
+    be_auth = be_sub.add_parser("auth", help="local user store (scrypt); password via DEYE_BACKEND_PASSWORD")
+    be_auth_sub = be_auth.add_subparsers(dest="verb", required=True)
+    be_add = be_auth_sub.add_parser("add-user"); be_add.add_argument("username")
+    be_add.add_argument("--role", default="user")
+    be_ver = be_auth_sub.add_parser("verify"); be_ver.add_argument("username")
+    be_q = be_sub.add_parser("queue", help="SQLite-backed FIFO job queue")
+    be_q_sub = be_q.add_subparsers(dest="verb", required=True)
+    be_enq = be_q_sub.add_parser("enqueue"); be_enq.add_argument("topic"); be_enq.add_argument("payload", nargs="?", default="{}")
+    be_clm = be_q_sub.add_parser("claim"); be_clm.add_argument("--topic", default=None)
+    be_q_sub.add_parser("stats")
+    be_o = be_sub.add_parser("object", help="content-addressable object store (SHA-256)")
+    be_o_sub = be_o.add_subparsers(dest="verb", required=True)
+    be_put = be_o_sub.add_parser("put"); be_put.add_argument("file")
+    be_get = be_o_sub.add_parser("get"); be_get.add_argument("sha"); be_get.add_argument("--output", "-o", default=None)
+    be_o_sub.add_parser("stats")
+    be_s = be_sub.add_parser("secret", help="check that a secret reference resolves (never prints the value)")
+    be_s_sub = be_s.add_subparsers(dest="verb", required=True)
+    be_sc = be_s_sub.add_parser("check"); be_sc.add_argument("ref", help="env:NAME or keychain:SERVICE/ACCOUNT")
+
     rel = sub.add_parser("release", help="sign / verify a release bundle (FOSS Ed25519 + SHA256SUMS)")
     rel_sub = rel.add_subparsers(dest="verb", required=True)
     rel_m = rel_sub.add_parser("manifest", help="write SHA256SUMS for a bundle dir")
@@ -373,7 +462,8 @@ _DISPATCH = {
     "usage": cmd_usage, "serve-http": cmd_serve_http,
     "init-claude": cmd_init_claude, "repo": cmd_repo, "graph": cmd_graph,
     "transcript": cmd_transcript, "multi-search": cmd_multi_search,
-    "bilibili": cmd_bilibili, "release": cmd_release, "lifecycle": cmd_lifecycle,
+    "bilibili": cmd_bilibili, "backend": cmd_backend, "release": cmd_release,
+    "lifecycle": cmd_lifecycle,
 }
 
 
