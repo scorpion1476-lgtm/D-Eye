@@ -101,7 +101,7 @@ def test_live_github_repo_rejects_nonexistent():
     try:
         env = connector.run({"repo": "definitely-not-a-real-owner-42/repo-nope-42"})
     except Exception as exc:
-        assert "not found" in str(exc.value).lower() or "404" in str(exc.value).lower()
+        assert "not found" in str(exc).lower() or "404" in str(exc).lower()
         return
     # No exception: only acceptable if GitHub rate-limited the lookup.
     _skip_if_github_rate_limited(env.warnings)
